@@ -687,35 +687,45 @@ function node_invoke_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
   return $return;
 }
 
-/**
- * Load a node object from the database.
- *
- * @param $param
- *   Either the nid of the node or an array of conditions to match against in the database query
- * @param $revision
- *   Which numbered revision to load. Defaults to the current version.
- * @param $reset
- *   Whether to reset the internal node_load cache.
- *
- * @return
- *   A fully-populated node object.
- */
-function node_load($param = array(), $revision = NULL, $reset = NULL) {
-  static $nodes = array();
+function node_get_cache_id($nid) {
+  $cache_id = "node/{$nid}";
+  return $cache_id;
+}
 
-  if ($reset) {
-    $nodes = array();
-  }
-
-  $cachable = ($revision == NULL);
-  $arguments = array();
-  if (is_numeric($param)) {
-    if ($cachable) {
-      // Is the node statically cached?
-      if (isset($nodes[$param])) {
-        return is_object($nodes[$param]) ? drupal_clone($nodes[$param]) : $nodes[$param];
+function node_cache_get($nid) {
+  $cache_id = node_get_cache_id($nid);
+  $cache = cache_get($cache_id, 'cache_node');
+  if($cache) {
+    $node = is_object($cache->data) ? drupal_clone($cache->data) : $cache->data;
+    // If for some reason we need to alter the node after it is pulled from cached.
+    // In the future this will let us store only what is cacheable and still
+    // let modules affect the loaded node
+    if ($extra = node_invoke_nodeapi($node, 'post_cache')) {
+      foreach ($extra as $key => $value) {
+        $node->$key = $value;
       }
     }
+    return $node;
+  }
+}
+
+function node_cache_set(&$node) {
+  $cache_id = node_get_cache_id($node->nid);
+  cache_set($cache_id, $node, 'cache_node');
+}
+
+function node_cache_clear($nid) {
+  $cache_id = node_get_cache_id($nid);
+  cache_clear_all($cache_id,'cache_node');
+}
+
+function node_cache_clear_all() {
+  cache_clear_all('*','cache_node', TRUE);
+}
+
+function node_load_from_db($param, $revision = NULL) {
+  // Build conditions
+  if (is_numeric($param)) {
     $cond = 'n.nid = %d';
     $arguments[] = $param;
   }
@@ -755,22 +765,98 @@ function node_load($param = array(), $revision = NULL, $reset = NULL) {
     $node = db_fetch_object(db_query('SELECT '. $fields .' FROM {node} n INNER JOIN {users} u ON u.uid = n.uid INNER JOIN {node_revisions} r ON r.vid = n.vid WHERE '. $cond, $arguments));
   }
 
-  if ($node && $node->nid) {
-    // Call the node specific callback (if any) and piggy-back the
-    // results to the node or overwrite some values.
-    if ($extra = node_invoke($node, 'load')) {
-      foreach ($extra as $key => $value) {
-        $node->$key = $value;
-      }
-    }
+  return $node;
+}
 
-    if ($extra = node_invoke_nodeapi($node, 'load')) {
-      foreach ($extra as $key => $value) {
-        $node->$key = $value;
+/**
+ * Load a node object from the database.
+ *
+ * @param $param
+ *   Either the nid of the node or an array of conditions to match against in the database query
+ * @param $revision
+ *   Which numbered revision to load. Defaults to the current version.
+ * @param $reset
+ *   Whether to reset the internal node_load cache.
+ *
+ * @return
+ *   A fully-populated node object.
+ */
+function node_load($param = array(), $revision = NULL, $reset = NULL) {
+  global $user;
+  static $nodes = array();
+
+  if ($reset) {
+    $nodes = array();
+  }
+
+  $arguments = array();
+
+  $cacheable = ($revision == NULL);
+
+  // Sometimes we pass an array that only has the nid. 
+  // Change that to just the nid so we can cash
+  if (is_array($param) && count($param) == 1 && isset($param['nid'])) {
+    $param = $param['nid'];
+  }
+
+
+  // Load from cache 
+  if (is_numeric($param)) {
+    if ($cacheable) {
+      // Is the node statically cached?
+      if (isset($nodes[$param])) {
+        return is_object($nodes[$param]) ? drupal_clone($nodes[$param]) : $nodes[$param];
+      }
+      // Grab external cache
+      $node = node_cache_get($param);
+      if($node) {
+        $nodes[$param] = $node;
+        return $nodes[$param];
       }
     }
-    if ($cachable) {
-      $nodes[$node->nid] = is_object($node) ? drupal_clone($node) : $node;
+  }
+
+
+  $node = node_load_from_db($param, $revision);
+
+  if (!$node && !$node->nid) {
+    return FALSE;
+  }
+
+  // Call the node specific callback (if any) and piggy-back the
+  // results to the node or overwrite some values.
+  if ($extra = node_invoke($node, 'load')) {
+    foreach ($extra as $key => $value) {
+      $node->$key = $value;
+    }
+  }
+
+  if ($extra = node_invoke_nodeapi($node, 'load')) {
+    foreach ($extra as $key => $value) {
+      $node->$key = $value;
+    }
+  }
+
+  if ($extra = node_invoke_nodeapi($node, 'post_load')) {
+    foreach ($extra as $key => $value) {
+      $node->$key = $value;
+    }
+  }
+
+  if ($cacheable) {
+    $nodes[$node->nid] = is_object($node) ? drupal_clone($node) : $node;
+
+    $external_cache = TRUE;
+    $hook = 'node_cache_disable';
+    foreach(module_implements($hook) as $module) {
+      $func = $module .'_'. $hook;
+      $result = $func($node);
+      if($result === FALSE) {
+        $external_cache = FALSE;
+      }
+    }
+    if($external_cache) {
+      node_cache_set($nodes[$node->nid]);
     }
   }
 
@@ -936,6 +1022,7 @@ function node_save(&$node) {
 
   // Clear the page and block caches.
   cache_clear_all();
+  node_cache_clear($node->nid);
 }
 
 /**
@@ -975,6 +1062,7 @@ function node_delete($nid) {
 
     // Clear the page and block caches.
     cache_clear_all();
+    node_cache_clear($node->nid);
 
     // Remove this node from the search index if needed.
     if (function_exists('search_wipe')) {
@@ -2351,6 +2439,7 @@ function node_access_rebuild($batch_mode = FALSE) {
     drupal_set_message(t('Content permissions have been rebuilt.'));
     node_access_needs_rebuild(FALSE);
     cache_clear_all();
+    node_cache_clear_all();
   }
 }
 
@@ -2768,5 +2857,28 @@ function node_unpublish_by_keyword_action($node, $context) {
       watchdog('action', 'Set @type %title to unpublished.', array('@type' => node_get_types('name', $node), '%title' => $node->title));
       break;
     }
+  }
+}
+
+/**
+ * Need to clear node object so comment count can be updated. 
+ * Should be taken out since clearing the whole node is kind of harsh.
+ */
+function node_comment(&$a1, $op) {
+  $comments = (array) $a1;
+  $nid = $comments['nid'];
+
+  if (!is_numeric($nid)) {
+    return;
+    }
+
+  switch($op) {
+    case 'insert':
+    case 'update':
+    case 'delete':
+    case 'publish':
+    case 'unpublish':
+      node_cache_clear($nid);
+    break;
   }
 }

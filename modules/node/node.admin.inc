@@ -535,6 +535,8 @@ function node_admin_nodes_submit($form, &$form_state) {
     call_user_func_array($function, $args);
 
     cache_clear_all();
+    // This should really only clear the $nodes
+    node_cache_clear_all();
   }
   else {
     // We need to rebuild the form to go to a second step.  For example, to

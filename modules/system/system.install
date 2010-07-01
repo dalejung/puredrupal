@@ -590,6 +590,9 @@ function system_schema() {
   $schema['cache_menu'] = $schema['cache'];
   $schema['cache_menu']['description'] = 'Cache table for the menu system to store router information as well as generated link trees for various menu/page/user combinations.';
 
+  $schema['cache_node'] = $schema['cache'];
+  $schema['cache_node']['description'] = 'Cache table for node caching';
+
   $schema['files'] = array(
     'description' => 'Stores information for uploaded files.',
     'fields' => array(
