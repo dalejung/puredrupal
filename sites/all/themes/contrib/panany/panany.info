@@ -1,0 +1,28 @@
+; $Id: panany.info,v 1.1 2010/01/11 05:35:12 jwolf Exp $
+
+name = Panany
+description = A theme to use with Panels Everywhere
+core = 6.x
+
+stylesheets[all][] = css/panany.css
+
+plugins[panels][layouts] = plugins/layouts
+plugins[panels][styles] = plugins/styles
+
+features[] = logo
+features[] = name
+features[] = node_user_picture
+features[] = comment_user_picture
+features[] = search
+features[] = favicon
+features[] = primary_links
+
+engine = phptemplate
+
+
+; Information added by drupal.org packaging script on 2010-01-11
+version = "6.x-0.x-dev"
+core = "6.x"
+project = "panany"
+datestamp = "1263212077"
+

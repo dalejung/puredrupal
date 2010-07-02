@@ -1,0 +1,29 @@
+/* $Id: panany_pinstripe.css,v 1.1 2010/01/11 05:35:13 jwolf Exp $ */
+
+div.panany-pinstripe div.panel-pane {
+  background: #FAFBF6 url('linebox-background.png') repeat center;
+  border: 1px solid #aaa;
+  box-shadow: 2px 2px 6px #cecece;
+  margin-bottom: 10px;
+  padding: 10px;
+  -moz-box-shadow: 2px 2px 6px #cecece;
+  -webkit-box-shadow: 2px 2px 6px #cecece;
+}
+
+div.panany-pinstripe div.panel-pane:after {
+  clear: both;
+  content: ".";
+  display: block;
+  font-size: 0;
+  height: 0;
+  visibility: hidden;
+}
+
+div.panany-pinstripe h2.pane-title {
+  background: #412B19;
+  border: 1px solid #aaa;
+  color: #fff;
+  font-size: 18px;    /* TODO: convert pixels to ems / percentage */
+  margin: -6px -6px 10px;
+  padding: 4px 10px;
+}
