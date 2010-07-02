@@ -544,6 +544,13 @@ function drupal_prepare_form($form_id, &$form, &$form_state) {
   // to repopulate it to ensure both calls get the data.
   $data['__drupal_alter_by_ref'] = array(&$form_state);
   drupal_alter('form', $data, $form_id);
+
+  // hook_post_form_alter
+  // Add a secondary form alter of both types
+  $data['__drupal_alter_by_ref'] = array(&$form_state);
+  drupal_alter('post_form_'. $form_id, $data);
+  $data['__drupal_alter_by_ref'] = array(&$form_state);
+  drupal_alter('post_form', $data, $form_id);
 }
 
 
