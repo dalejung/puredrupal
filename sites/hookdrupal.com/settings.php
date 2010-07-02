@@ -19,7 +19,7 @@ ini_set('session.use_trans_sid',    0);
 ini_set('url_rewriter.tags',        '');
 
 // Memcache
-$conf['cache_inc'] ='sites/all/modules/memcache/memcache.inc';
+$conf['cache_inc'] ='sites/all/modules/contrib/memcache/memcache.inc';
 
 $conf['memcache_servers'] = array(
   'localhost:36841' => 'default',
