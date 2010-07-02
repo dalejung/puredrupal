@@ -231,6 +231,14 @@ function memcache_admin_shutdown() {
     }
   }
 
+  // Building theme registry in shutdown will break due to the cwd
+  // being changed to server root during shutdown function
+  // If the registry hasn't been built, we won't do it
+  if (!(function_exists('theme_get_registry') && theme_get_registry())) {
+    return;
+  }
+
+
   if (variable_get('show_memcache_statistics', TRUE) && function_exists('user_access') && user_access('access memcache statistics')) {
     $stats = array();
 
