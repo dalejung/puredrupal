@@ -17,3 +17,15 @@ ini_set('session.use_cookies',      1);
 ini_set('session.use_only_cookies', 1);
 ini_set('session.use_trans_sid',    0);
 ini_set('url_rewriter.tags',        '');
+
+// Memcache
+$conf['cache_inc'] ='sites/all/modules/memcache/memcache.inc';
+
+$conf['memcache_servers'] = array(
+  'localhost:36841' => 'default',
+  'localhost:36842' => 'node',
+);
+$conf['memcache_bins'] = array(
+  'cache_page' => 'default',
+  'cache_node' => 'node',
+);
