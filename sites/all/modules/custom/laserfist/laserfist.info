@@ -1,0 +1,4 @@
+; $Id$
+name = Laserfist
+description = "Drupal: Laserfist Edition"
+core = 6.x
