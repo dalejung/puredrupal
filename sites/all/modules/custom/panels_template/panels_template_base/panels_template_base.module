@@ -14,11 +14,16 @@ function panels_template_base_panels_template_template_types() {
   $options = array(
     'article' => array(
       'label' => t('Article Templates'),
-      'parent' => 'node',
+      'parent' => 'node_view',
+      'context_enabled' => FALSE,
     ),
     'homepage' => array(
       'label' => t('Homepage Templates'),
-      'parent' => 'node',
+      'parent' => 'node_view',
+    ),
+    'site_template' => array(
+      'label' => t('Site Templates'),
+      'parent' => 'site_template',
     ),
     'right_column' => array(
       'label' => t('Right Column')
