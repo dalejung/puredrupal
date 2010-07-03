@@ -5,7 +5,7 @@
  * plugin definition
  */
 $plugin = array(
-  'title' => t('Laserfist Template'),
+  'title' => t('Panels Template Style'),
   'description' => t('The template panel rendering style; displays each pane with a separator.'),
   'render panel' => 'panels_template_style_template_handler',
   'settings form' => 'panels_template_style_template_settings_form',
