@@ -1,0 +1,5 @@
+; $Id$
+name = Panels Solr
+description = "Apache SOLR Search Help"
+core = 6.x
+package = Panels

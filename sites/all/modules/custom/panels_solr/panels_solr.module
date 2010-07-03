@@ -1,0 +1,172 @@
+<?php
+
+module_load_include('inc','search','search.pages');
+
+function panels_solr_ctools_plugin_directory($module,$plugin) {
+  if($module == 'ctools') {
+    return 'plugins/'.$plugin;
+  }
+}
+
+function panels_solr_search_view($search_path) {
+	static $results;
+	if($results) {
+		return $results;
+	}
+	// set the search path
+	panels_solr_get_search_path($search_path);
+  $results = '';
+	$type = 'panels_solr';
+	$keys = trim(panels_solr_get_keys());
+	$filters = '';
+	if (isset($_GET['filters'])) {
+		$filters = trim($_GET['filters']);
+	}
+	// Only perform search if there is non-whitespace search term or filters:
+	if ($keys || $filters) {
+		// Log the search keys:
+		$log = $keys;
+		if ($filters) {
+			$log .= 'filters='. $filters;
+		}      watchdog('search', '%keys (@type).', array('%keys' => $log, '@type' => t('Search')), WATCHDOG_NOTICE, l(t('results'), 'search/'. $type .'/'. $keys));
+
+		// Collect the search results:
+		$results = search_data($keys, $type);
+
+		if ($results) {
+			$results = theme('box', t('Search results'), $results);
+		}
+		else {        
+			$results = theme('box', t('Your search yielded no results'), search_help('search#noresults', drupal_help_arg()));
+		}
+	}
+	return $results;
+}
+
+function panels_solr_search($op = 'search', $keys = NULL) {
+  switch ($op) {
+    case 'name':
+      return t('Search');
+
+    case 'reset':
+      apachesolr_clear_last_index('apachesolr_search');
+      return;
+
+    case 'status':
+      return apachesolr_index_status('apachesolr_search');
+
+    case 'search':
+      $filters = isset($_GET['filters']) ? $_GET['filters'] : '';
+      $solrsort = isset($_GET['solrsort']) ? $_GET['solrsort'] : '';
+      $page = isset($_GET['page']) ? $_GET['page'] : 0;
+      $search_path = panels_solr_get_search_path();
+      try {
+        $results = apachesolr_search_execute($keys, $filters, $solrsort, $search_path, $page);
+        return $results;
+      }
+      catch (Exception $e) {
+        watchdog('Apache Solr', nl2br(check_plain($e->getMessage())), NULL, WATCHDOG_ERROR);
+        apachesolr_failure(t('Solr search'), $keys);
+      }
+      break;
+  } // switch
+}
+
+function panels_solr_get_keys() {
+	static $return;
+	$max_bit = 2;
+	$menu = menu_get_item();
+	$search_path = $menu['path'];
+  $start = strlen($search_path);
+  $path = $_GET['q'];
+  $keys = substr($path,$start+1);
+  return $keys;
+}
+
+function panels_solr_get_search_path($path=null) {
+	static $search_path;
+	if($path) {
+		$search_path = $path;
+	}
+	return $search_path;
+}
+
+function panels_solr_post_form_search_form_alter(&$form, $form_state) {
+  if ($form['module']['#value'] == 'panels_solr') {
+    $form['#submit'] = array('panels_solr_form_search_submit');
+    // No other modification make sense unless a query is active.
+    // Note - this means that the query must always be run before
+    // calling drupal_get_form('search_form').
+    $apachesolr_has_searched = apachesolr_has_searched();
+
+    $queryvalues = array();
+    if ($apachesolr_has_searched) {
+      $query = apachesolr_current_query();
+      $queryvalues = $query->get_url_queryvalues();
+    }
+
+    $form['basic']['apachesolr_search']['#tree'] = TRUE;
+    $form['basic']['apachesolr_search']['queryvalues'] = array(
+      '#type' => 'hidden',
+      '#default_value' => serialize($queryvalues),
+    );
+    $form['basic']['apachesolr_search']['get'] = array(
+      '#type' => 'hidden',
+      '#default_value' => serialize(array_diff_key($_GET, array('q' => 1, 'page' => 1, 'filters' => 1, 'solrsort' => 1, 'retain-filters' => 1))),
+    );
+    if ($queryvalues || isset($form_state['post']['apachesolr_search']['retain-filters'])) {
+      $form['basic']['apachesolr_search']['retain-filters'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Retain current filters'),
+        '#default_value' => (int) isset($_GET['retain-filters']),
+      );
+    }
+
+    if (variable_get('apachesolr_search_spellcheck', FALSE) && $apachesolr_has_searched && ($response = apachesolr_static_response_cache())) {
+      //Get spellchecker suggestions into an array.
+      $suggestions = get_object_vars($response->spellcheck->suggestions);
+
+      if ($suggestions) {
+        //Get the original query and replace words.
+        $query = apachesolr_current_query();
+
+        foreach($suggestions as $word => $value) {
+          $replacements[$word] = $value->suggestion[0];
+        }
+        $new_keywords = strtr($query->get_query_basic(), $replacements);
+
+        $form['basic']['suggestion'] = array(
+          '#prefix' => '<div class="spelling-suggestions">',
+          '#suffix' => '</div>',
+          '#type' => 'item',
+          '#title' => t('Did you mean'),
+          '#value' => l($new_keywords, $query->get_path($new_keywords)),
+        );
+      }
+    }
+  }
+}
+
+/**
+ * Added form submit function to account for Apache mode_rewrite quirks.
+ *
+ * @see apachesolr_search_form_search_form_alter()
+ */
+function panels_solr_form_search_submit($form, &$form_state) {
+  $fv = $form_state['values'];
+  $keys = $fv['processed_keys'];
+	$base = $form['#action'].'/';
+  if (variable_get('clean_url', '0')) {
+    $keys = str_replace('+', '%2B', $keys);
+  }
+  $get = unserialize($fv['apachesolr_search']['get']);
+  $queryvalues = unserialize($fv['apachesolr_search']['queryvalues']);
+  if (!empty($fv['apachesolr_search']['retain-filters']) && $queryvalues) {
+    $get = $queryvalues + $get;
+    $get['retain-filters'] = '1';
+  }
+  $form_state['redirect'] = array($base . $keys, $get);
+  if ($keys == '' && !$queryvalues) {
+    form_set_error('keys', t('Please enter some keywords.'));
+  }
+}
