@@ -93,18 +93,6 @@ function panels_template_get_applicable_types(&$node) {
   return $enabled[$node->type];
 }
 
-
-function panels_template_panels_template_applicable_types() {
-  $enabled = array();
-  $enabled['homepage'] = array();
-  $enabled['homepage'][] = 'right_column';
-  $enabled['homepage'][] = 'homepage';
-  $enabled['article'] = array();
-  $enabled['article'][] = 'right_column';
-  $enabled['article'][] = 'article';
-  return $enabled;
-}
-
 function panels_template_nodeapi(&$node, $op, $a3, $a4) {
   switch ($op) {
     case 'update':

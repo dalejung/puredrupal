@@ -2,41 +2,19 @@
 /**
  * Provide a context driven right column for panel nodes
  */
-function panels_template_block($op = 'list', $delta = 0, $edit = array()) {
-  if ($op == 'list') {
-    $blocks['right_column'] = array('info' => t('Panels Template: Right Column'));
-    $blocks['left_column'] = array('info' => t('Panels Template: Left Column'));
-    return $blocks;
-  } 
-  elseif ($op == 'view') {
-    switch ($delta) {
-      case 'right_column':
-        $block = array(
-          'subject' => '<none>',
-          'content' => panels_template_block_render('right_column'),
-        );
-        break;
-      case 'left_column':
-        $block = array(
-          'subject' => '<none>',
-          'content' => panels_template_block_render('left_column'),
-        );
-        break;
-    }
-    return $block;
-  }
+function panels_template_region_handler($type) {
+  // Right nid from node
+  $node = menu_get_object();
+  return panels_template_region_render($type, $node);
 }
 
-
-function panels_template_block_render($type) {
-  // Grab default 
+function panels_template_region_render($type, $node) {
+  // Grab default from context 
   if (function_exists('context_active_values')) { 
     $defaults = context_active_values('panels_template_' . $type);
     $default = $defaults[0];
   }
 
-  // Right nid from node
-  $node = menu_get_object();
   $override = $node->panels_template[$type];
 
   $final = $override ? $override : $default;

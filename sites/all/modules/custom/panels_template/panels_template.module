@@ -8,8 +8,8 @@
  * used within blocks or other panels.
  */
 
-module_load_include('inc', 'panels_template', 'node_form');
 module_load_include('inc', 'panels_template', 'contexts');
+module_load_include('inc', 'panels_template', 'node_form');
 
 /**
  * Implementation of hook_perm().
