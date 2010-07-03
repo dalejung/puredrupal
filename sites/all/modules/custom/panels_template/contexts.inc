@@ -30,8 +30,10 @@ function panels_template_block($op = 'list', $delta = 0, $edit = array()) {
 
 function panels_template_block_render($type) {
   // Grab default 
-  $defaults = context_active_values('panels_template_' . $type);
-  $default = $defaults[0];
+  if (function_exists('context_active_values')) { 
+    $defaults = context_active_values('panels_template_' . $type);
+    $default = $defaults[0];
+  }
 
   // Right nid from node
   $node = menu_get_object();
