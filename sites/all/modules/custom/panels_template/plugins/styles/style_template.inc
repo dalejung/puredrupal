@@ -2,32 +2,24 @@
 // $Id: default.inc,v 1.1.2.2 2009/03/24 18:32:20 merlinofchaos Exp $
 
 /**
- * @file styles/block.inc
- * Definition of the 'default' panel style.
- */
-
-// ---------------------------------------------------------------------------
-// Panels hooks.
-
-/**
  * plugin definition
  */
 $plugin = array(
   'title' => t('Laserfist Template'),
   'description' => t('The template panel rendering style; displays each pane with a separator.'),
-  'render panel' => 'panels_template_style_template_style_render_panel',
-  'settings form' => 'panels_template_style_template_style_settings_form',
-  'settings validate' => 'panels_template_style_template_style_settings_validate',
+  'render panel' => 'panels_template_style_template_handler',
+  'settings form' => 'panels_template_style_template_settings_form',
+  'settings validate' => 'panels_template_style_template_settings_validate',
   'hook theme' => array(
-    'panel_style_template' => array(
+    'panels_template_panel_layout' => array(
       'path' => drupal_get_path('module','panels_template').'/plugins/styles',
       'template' => 'panel-style-template',
       'arguments' => array('display' => null, 'panel_id' => null, 'panes' => array(), 'settings'=>array()),
     ),
-    'panels_template_style_template_simple_pane' => array(
+    'panels_template_simple_pane' => array(
       'arguments' => array('content' => null, 'pane' => null, 'display' => null),
     ),
-    'panels_template_style_template_render_panel' => array(
+    'panels_template_default_render_panel' => array(
       'arguments' => array(
         'display' => null, 
         'panel_id' => null, 
@@ -44,25 +36,93 @@ $plugin = array(
 /**
  * Render callback.
  *
- * @ingroup themeable
  */
-function theme_panels_template_style_template_style_render_panel($display, $panel_id, $panes, $settings) {
+function theme_panels_template_style_template_handler($display, $panel_id, $panes, $settings) {
 	$theme = $settings['template_theme'];
 	// If we don't have theme, we don't have anything to do. Use default
 	if(!$theme) {
-		return theme('panels_template_style_template_render_panel',$display, $panel_id, $panes, $settings);
+		return theme('panels_template_default_render_panel',$display, $panel_id, $panes, $settings);
 	}
 
   $output = '';
 
-	$output .= theme('panel_style_template',$display, $panel_id, $panes, $settings);
+	$output .= theme('panels_template_panel_layout',$display, $panel_id, $panes, $settings);
 
   return $output;
 }
 
-function panels_template_style_template_style_render_pane($content, $pane, $display,$settings) {
-	// If not set
-	if(!$settings['simple_theme']) {
+/*
+ * Render the Panel in a default kind of way
+ *
+ **/
+function theme_panels_template_default_render_panel($display, $panel_id, $panes, $settings) {
+  $output = '';
+
+  $print_separator = FALSE;
+  foreach ($panes as $pane_id => $content) {
+    if ($content->content != '') {
+      // Add the separator if we've already displayed a pane.
+      if ($print_separator && $content->css_class != 'skip-separator') {
+        $output .= '<div class="panel-separator"></div>';
+      }
+      $output .= $text = panels_render_pane($content, $display->content[$pane_id], $display);
+
+      // If we displayed a pane, this will become true; if not, it will become
+      // false.
+      $print_separator = (bool) $text;
+    }
+  }
+  return $output;
+}
+
+/*
+ *  Prepare the tpl.php by setting template_file and stick
+ *  pane content into $vars
+*/
+function template_preprocess_panels_template_panel_layout(&$vars) {
+	$settings = $vars['settings'];
+	$theme = $settings['template_theme'];
+	$vars['theme'] = $theme;
+	// We already checked before but do it again
+	if(!$theme) {
+		return;		
+	}
+
+	if($template_file = $settings['template_theme']) {
+		$vars['template_files'][] = str_replace('_','-',$template_file);
+	}
+
+
+	$panes = $vars['panes'];
+	$panel_id = $vars['panel_id'];
+	$display = $vars['display'];
+
+  // Render panes and puts into $vars so themer could play with tpl  
+  $vars['pane_content'] = new stdClass();
+  foreach ($panes as $pane_id => $content) {
+		$pane_output = '';
+		$admin_links = '';
+
+		$content->rendered = TRUE;
+		if (user_access('view pane admin links') && !empty($content->admin_links)) {
+			$admin_links = '<div class="admin-links">'.theme('links', $content->admin_links).'</div>';
+		}
+		$pane_output .= $admin_links;
+    $pane_output .= panels_template_render_pane($content, $display->content[$pane_id], $display,$settings);
+		$pane_key = $content->type.'_'.$content->subtype;
+		$pane_key = str_replace('-','_',$pane_key);
+		$vars['pane_content']->$pane_key = $pane_output;
+  }
+}
+
+
+
+/*
+ * Panels Template version of the render pane
+ **/
+function panels_template_render_pane($content, $pane, $display,$settings) {
+	// If not set, use the panels render pane
+	if (!$settings['simple_theme']) {
 		return panels_render_pane($content, $display->content[$pane_id], $display);	
 	}
 
@@ -80,13 +140,17 @@ function panels_template_style_template_style_render_pane($content, $pane, $disp
     }
   }
 
-  if (!empty($content)) {
-    // fallback
-    return theme('panels_template_style_template_simple_pane', $content, $pane, $display);
+  // if we're here, we want to use simple pane render 
+  if (empty($node->style['style'])) {
+    return theme('panels_template_simple_pane', $content, $pane, $display);
   }
 }
 
-function theme_panels_template_style_template_simple_pane($content, $pane, $display) {
+/*
+ * Minimize the output of pane
+ *
+ **/
+function theme_panels_template_simple_pane($content, $pane, $display) {
   if (!empty($content->content)) {
     $idstr = $classstr = '';
     if (!empty($content->css_id)) {
@@ -125,48 +189,11 @@ function theme_panels_template_style_template_simple_pane($content, $pane, $disp
   }
 }
 
-/*
-	Emaulate a theme hook by adding the tempalte file and calling the
-	preprocess function
-*/
-function template_preprocess_style_panel_template(&$vars) {
-	$settings = $vars['settings'];
-	$theme = $settings['template_theme'];
-	$vars['theme'] = $theme;
-	// We already checked before but do it again
-	if(!$theme) {
-		return;		
-	}
-
-	if($template_file = $settings['template_theme']) {
-		$vars['template_files'][] = str_replace('_','-',$template_file);
-	}
-
-
-	$panes = $vars['panes'];
-	$panel_id = $vars['panel_id'];
-	$display = $vars['display'];
-
-  foreach ($panes as $pane_id => $content) {
-		$pane_output = '';
-		$admin_links = '';
-
-		$content->rendered = TRUE;
-		if (user_access('view pane admin links') && !empty($content->admin_links)) {
-			$admin_links = '<div class="admin-links">'.theme('links', $content->admin_links).'</div>';
-		}
-		$pane_output .= $admin_links;
-    $pane_output .= panels_template_style_template_style_render_pane($content, $display->content[$pane_id], $display,$settings);
-		$pane_key = $content->type.'_'.$content->subtype;
-		$pane_key = str_replace('-','_',$pane_key);
-		$vars[$pane_key] = $pane_output;
-  }
-}
 
 /**
  * Settings form callback.
  */
-function panels_template_style_template_style_settings_form($style_settings) {
+function panels_template_style_template_settings_form($style_settings) {
   $form['display_theme'] = array(
     '#type' => 'textfield',
     '#title' => t('Panels Display Template Theme'),
@@ -187,25 +214,5 @@ function panels_template_style_template_style_settings_form($style_settings) {
   );
 
   return $form;
-}
-
-function theme_panels_template_style_template_render_panel($display, $panel_id, $panes, $settings) {
-  $output = '';
-
-  $print_separator = FALSE;
-  foreach ($panes as $pane_id => $content) {
-    if ($content->content != '') {
-      // Add the separator if we've already displayed a pane.
-      if ($print_separator && $content->css_class != 'skip-separator') {
-        $output .= '<div class="panel-separator"></div>';
-      }
-      $output .= $text = panels_render_pane($content, $display->content[$pane_id], $display);
-
-      // If we displayed a pane, this will become true; if not, it will become
-      // false.
-      $print_separator = (bool) $text;
-    }
-  }
-  return $output;
 }
 

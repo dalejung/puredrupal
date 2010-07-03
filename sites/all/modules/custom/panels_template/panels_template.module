@@ -30,6 +30,36 @@ function panels_template_menu() {
   return _panels_template_menu();
 }
 
+function panels_template_theme_registry_alter(&$reg) {
+  $layouts = panels_get_layouts();
+  // Add a preprocess function for each panels layout
+  $path = path_to_theme();
+  $panel_layouts = $path . '/panel_layouts';
+  foreach ($layouts as $layout) {
+    $reg[$layout['theme']]['preprocess functions'][] = 'panels_template_preprocess_panels_layout';
+    $reg[$layout['theme']]['theme paths'][] = $path;
+    $reg[$layout['theme']]['theme paths'][] = $panel_layouts;
+  }
+
+  $reg['panels_template_panel_layout']['theme paths'][] = $path; 
+  $reg['panels_template_panel_layout']['theme paths'][] = $panel_layouts; 
+}
+
+/*
+  If the display theme was set, create the template suggestion
+*/
+function panels_template_preprocess_panels_layout(&$vars) {
+  $display = $vars['display'];
+  $display_theme = $display->panel_settings['style_settings']['default']['display_theme'];
+  if ($display_theme) {
+    $vars['template_files'][] = $display_theme;
+  }
+  $panes_content = $vars['content']['panes_content'];
+  foreach ((array) $panes_content as $key => $pane) {
+    $vars[$key] = $pane->content;
+  }
+}
+
 /**
  * Statically store all used IDs to ensure all template panels get a unique id.
  */
