@@ -2838,6 +2838,11 @@ function drupal_alter($type, &$data) {
     $function = $module .'_'. $type .'_alter';
     call_user_func_array($function, $args);
   }
+
+  foreach (module_implements($type .'_post_alter') as $module) {
+    $function = $module .'_'. $type .'_post_alter';
+    call_user_func_array($function, $args);
+  }
 }
 
 
