@@ -8,11 +8,11 @@ function panels_template_region_handler($type) {
   return panels_template_region_render($type, $node);
 }
 
-function panels_template_region_render($type, $node) {
+function panels_template_region_render($type, $node=null) {
   // Grab default from context 
-  if (function_exists('context_active_values')) { 
-    $defaults = context_active_values('panels_template_' . $type);
-    $default = $defaults[0];
+  if (function_exists('context_get_plugin')) { 
+    $plugin = context_get_plugin('reaction','panels_template');
+    $default = $plugin->get_template($type);
   }
 
   $override = $node->panels_template[$type];
@@ -23,6 +23,7 @@ function panels_template_region_render($type, $node) {
     return;
   }
 
+
   $display = panels_template_grab_display($final);
   if (!$display) {
     return;
@@ -31,26 +32,36 @@ function panels_template_region_render($type, $node) {
   return $content;
 }
 
+function panels_template_context_plugins() {
+  $plugins = panels_template_context_reactions();
+  return $plugins;
+}
+
+function panels_template_context_registry() {
+  $registry = array();
+  $registry['reactions'] =  array(
+    'panels_template' => array(
+      'title' => 'Panels Template',
+      'description' => 'Control Panel Template Regions',
+      'plugin' => 'panels_template_reaction'   
+     ),
+  );
+
+  return $registry;
+}
 
 function panels_template_context_reactions() {
-  $template_types = panels_template_get_template_types();
-  $types = array('left_column', 'right_column');
-  $templates = array();
+  $plugins = array();
 
-  foreach ($types as $name) {
-    $options = array(
-      '' => t('None'),
-    );
-    $template_type = $template_types[$name];
-    $options += panels_template_panels_template_list_type($name); 
-    $templates['panels_template_' . $name] = array(
-      '#type' => 'select',
-      '#title' => 'Panels Templates: ' . $template_type['label'],
-      '#options' => $options,
-    );
-  }
-
-  return $templates;
+  $plugins['panels_template_reaction'] = array(
+    'handler' => array(
+    'path' => drupal_get_path('module', 'panels_template'). '/plugins',
+    'file' => 'context.reactions.inc',
+    'class' => 'panels_template_reaction',
+    'parent' => 'context_reaction',
+    ),
+  );
+  return $plugins;
 }
 
 /**

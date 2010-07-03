@@ -46,6 +46,18 @@ function panels_template_theme_registry_alter(&$reg) {
 }
 
 /*
+ * TODO: Split out from this module
+ */
+function panels_template_theme_registry_post_alter(&$reg) {
+  $preprocess = &$reg['page']['preprocess functions'];
+  $i = array_search('context_page_alter', $preprocess);
+  if($i) {
+    array_splice($preprocess, $i, 1);
+  }
+  array_unshift($preprocess, 'context_page_alter');
+}
+
+/*
   If the display theme was set, create the template suggestion
 */
 function panels_template_preprocess_panels_layout(&$vars) {
@@ -240,34 +252,21 @@ function panels_template_get_template_types() {
   return $types;
 }
 
-function panels_template_panels_template_template_types() {
-  $options = array(
-    'article' => array(
-      'label' => t('Article Templates'),
-      'parent' => 'node',
-    ),
-    'homepage' => array(
-      'label' => t('Homepage Templates'),
-      'parent' => 'node',
-    ),
-    'right_column' => array(
-      'label' => t('Right Column')
-    ),
-    'left_column' => array( 
-      'label' => t('Left Column')
-    ),
-  );
-  return $options;
-}
-
 /*
   Implementation of panel_task_override
   Provided by panel_template.inc panel task
 */
 function panels_template_panel_task_override(&$handler,$display) {
-  if ($handler->task != 'node_view') {
-    return;
+  if ($handler->task == 'node_view') {
+    return panels_template_node_view_task_override($handler, $display);
   }
+  if ($handler->task == 'site_template') {
+    return panels_template_site_template_task_override($handler, $display);
+  }
+}
+
+function panels_template_node_view_task_override(&$handler,$display) {
+
   $node = $display->context['argument_nid_1']->data;
 
 	// Node specific template. This is set on node edit form
@@ -275,7 +274,7 @@ function panels_template_panel_task_override(&$handler,$display) {
 	// template
   $template_types = panels_template_get_template_types();
   foreach ((array) $node->panels_template as $key=>$template) {
-    if ($template_types[$key] && $template_types[$key]['parent'] == 'node') {
+    if ($template_types[$key] && $template_types[$key]['parent'] == 'node_view') {
       $name = $node->panels_template[$key];
     }
   }
@@ -295,6 +294,41 @@ function panels_template_panel_task_override(&$handler,$display) {
     return $display;
   }
 }
+
+function panels_template_site_template_task_override(&$handler,$display) {
+
+  $node = $display->context['argument_nid_1']->data;
+  $args = $display->args;
+  $content = $args[1]->content;
+
+	// Node specific template. This is set on node edit form
+	// Overtake the node_view display if the template is a node_view
+	// template
+  $template_types = panels_template_get_template_types();
+  foreach ((array) $node->panels_template as $key=>$template) {
+    if ($template_types[$key] && $template_types[$key]['parent'] == 'site_template') {
+      $name = $node->panels_template[$key];
+    }
+  }
+
+	// Default to the _default
+  if (!$name) {
+    $name = $node->type . '_default';
+  }
+
+  $templates = panels_template_load_all();
+  $template = $templates[$name];
+
+  if ($template) {
+    $display = $template->display;
+    $task = page_manager_get_task('site_template');
+    $page = page_manager_get_current_page();
+    $contexts = ctools_context_handler_get_task_contexts($task, '', array($_GET['q'], $content, $page));
+    $display->context = $contexts;
+    return $display;
+  }
+}
+
 
 function panels_template_grab_display($name) {
   $templates = panels_template_load_all();
