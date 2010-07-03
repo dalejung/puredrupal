@@ -1,5 +1,5 @@
 <?php
-// $Id: site_template.inc,v 1.2 2010/01/09 02:05:43 merlinofchaos Exp $
+// $Id: site_template.inc,v 1.3 2010/06/18 20:20:41 merlinofchaos Exp $
 
 /**
  * Define the task plugin.
@@ -22,6 +22,7 @@ $plugin = array(
   // Allow this to be enabled or disabled:
   'disabled' => !variable_get('panels_everywhere_site_template_enabled', FALSE),
   'enable callback' => 'panels_everywhere_site_template_enable',
+  'tab title' => t('Edit site template'),
 );
 
 /**

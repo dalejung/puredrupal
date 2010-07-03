@@ -5,9 +5,9 @@ package = "Panels"
 dependencies[] = panels
 dependencies[] = page_manager
 core = 6.x
-; Information added by drupal.org packaging script on 2010-02-01
-version = "6.x-1.0"
+; Information added by drupal.org packaging script on 2010-06-19
+version = "6.x-1.x-dev"
 core = "6.x"
 project = "panels_everywhere"
-datestamp = "1265067007"
+datestamp = "1276906389"
 

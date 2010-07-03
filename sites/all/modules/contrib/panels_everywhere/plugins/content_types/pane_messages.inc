@@ -1,5 +1,5 @@
 <?php
-// $Id: pane_messages.inc,v 1.2 2010/01/09 00:48:48 merlinofchaos Exp $
+// $Id: pane_messages.inc,v 1.3 2010/05/26 17:32:11 merlinofchaos Exp $
 
 /**
  * @file
@@ -13,6 +13,7 @@ $plugin = array(
   'icon' => 'icon_page.png',
   'description' => t('A general page messages block that includes tabs, messages and help. It is normally placed in the same region as your content. This can be easily modified by overriding pane-messages.tpl.php in your theme.'),
   'category' => t('Page elements'),
+  'render last' => TRUE,
 );
 
 /**
