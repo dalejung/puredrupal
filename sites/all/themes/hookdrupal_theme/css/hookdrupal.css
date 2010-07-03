@@ -1,0 +1,1113 @@
+/**
+ * $Id: panany.css,v 1.1 2010/01/11 05:35:12 jwolf Exp $
+ */
+
+/* Reset browser defaults
+-------------------------------------------------------------- */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote,
+a, abbr, acronym, address, big, cite,
+del, dfn, font, img, ins, kbd, q, s, samp,
+small, strike, sub, sup, tt, var, ol, ul, li, menu,
+fieldset, form, label, legend, input, textarea,
+table, caption, tbody, tfoot, thead, tr, th, td {
+  border: 0;
+  font-family: inherit;
+  font-size: 100%;
+  font-style: inherit;
+  font-weight: inherit;
+  margin: 0;
+  outline: 0;
+  padding: 0;
+}
+
+
+/* HTML & Body
+-------------------------------------------------------------- */
+html {
+  background: #F4F4E8;
+}
+
+/* Default font settings. 
+  The font-size percentage is of 16px. (0.875 * 16px = 14px) */
+body {
+  background: #F4F4E8 url('../images/main-background.png') no-repeat scroll center -300px;
+  border-top: 6px solid #412B19;
+  color: #333;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 87.5%;
+  line-height: 150%;
+}
+
+
+/* Headings
+-------------------------------------------------------------- */
+h1,h2,h3,h4,h5,h6 { color: #111; font-weight: normal; }
+
+h1 { font-size: 2em; line-height: 1; margin-bottom: 0.5em; }
+h2 { font-size: 1.5em; margin-bottom: 0.75em; }
+h3 { font-size: 1.2em; line-height: 1; margin-bottom: 1em; }
+h4 { font-size: 1em; height: 1.25em; line-height: 1.25; margin-bottom: 1.25em; }
+h5 { font-size: 1em; font-weight: bold; margin-bottom: 1.5em; }
+h6 { font-size: 1em; font-weight: bold; }
+
+h1 img, h2 img, h3 img, 
+h4 img, h5 img, h6 img {
+  margin: 0;
+}
+
+
+/* Text elements
+-------------------------------------------------------------- */
+p {
+  font-size: 1em;
+  margin: 1em 0;
+}
+
+a,
+a:link,
+a:visited {
+  color: #412B19;
+  text-decoration: none;
+}
+
+a:hover,
+a:active,
+a:focus {
+  color: #000;
+  text-decoration: underline;
+}
+
+strong {
+  font-weight: bold;
+}
+
+em,dfn {
+  font-style: italic;
+}
+
+dfn {
+  font-weight: bold;
+}
+
+sup,sub {
+  line-height: 0;
+}
+
+abbr,acronym {
+  border-bottom: 1px dotted #666;
+}
+
+address {
+  font-style: italic;
+  margin: 0 0 20px;
+}
+
+del {
+  color: #666;
+}
+
+pre,code {
+  margin: 20px 0;
+  white-space: pre;
+}
+
+pre,code,tt {
+  font: 1em 'andale mono', 'lucida console', monospace;
+  line-height: 1.5;
+}
+
+
+/* Lists
+-------------------------------------------------------------- */
+ul {
+  margin: 6px 0 14px;
+  padding: 0;
+}
+
+ol {
+  list-style-position: inside;
+  margin: 10px 0 18px;
+  padding: 0;
+}
+
+ol li {
+  padding: 0 0 4px;
+}
+
+ol li,
+ul li,
+ul.menu li,
+.item-list ul li,
+li.leaf {
+  margin: 2px 0 2px 0;
+}
+
+ul.menu,
+.item-list ul {
+  margin: 6px 0 0 0;
+  padding: 0;
+}
+
+ul.menu ul,
+.item-list ul ul {
+  margin-left: 0;
+}
+
+ul li,
+ul.menu li,
+.item-list ul li,
+li.leaf {
+  background: transparent url('../images/menu-leaf.gif') no-repeat 1px .45em;
+  list-style-type: none;
+  list-style-image: none;
+  padding: 0 0 4px 20px;
+}
+
+ul li.expanded {
+  background: transparent url('../images/menu-expanded.gif') no-repeat 1px .35em;
+}
+
+ul li.collapsed {
+  background: transparent url('../images/menu-collapsed.gif') no-repeat 0px .35em;
+}
+
+ul li.leaf a, 
+ul li.expanded a,
+ul li.collapsed a {
+  display: block;
+}
+
+ul.inline li {
+  background: none;
+  margin: 0;
+  padding: 0 14px 0 0;
+}
+
+ul.links li {
+  background: none;
+  margin: 0;
+  padding: 0;
+}
+
+dl {
+  margin: 0 0 22px 0;
+}
+
+dl dt {
+  font-weight: bold;
+}
+
+dd {
+  margin: 0 0 10px 22px;
+}
+
+ul.tips li {
+  background: transparent;
+  font-size: 1em;
+  list-style: disc;
+  list-style-image: none;
+  list-style-position: inside;
+}
+
+/* remove list styling on login block and taxonomy */
+#user-login-form div.item-list ul li,
+div.terms ul li {
+  list-style-type: none;
+  margin: 0;
+}
+
+#autocomplete li {
+  margin: 0;
+  padding: 0 8px;
+}
+
+
+/* Helper classes
+-------------------------------------------------------------- */
+.hide {
+  display: none;
+  visibility: hidden;
+}
+
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
+
+.clear {
+  clear: both;
+}
+
+.clearfix:after {                                 /* add .clearfix class to clear floats after an element */
+  clear: both;                                    /* (IE version is in ie6-fixes.css) */
+  content: "."; 
+  display: block; 
+  font-size: 0;
+  height: 0; 
+  visibility: hidden;
+}
+
+.first {
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.last {
+  margin-right: 0;
+  padding-right: 0;
+}
+
+.top {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.bottom {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+
+/* Misc.
+-------------------------------------------------------------- */
+/* Remove border on linked images. */
+a img {
+  border: none;
+}
+
+hr {
+  height: 1px;
+  border: 1px solid #ddd;
+}
+
+div.content a.feed-icon img,
+div.content th img {
+  border: 0;             /* remove image borders where we don't want them */
+}
+
+
+/* Layout & Regions
+-------------------------------------------------------------- */
+#page {
+  margin: 10px auto;
+  position: relative;
+  top: 28px;
+  width: 960px;
+}
+
+#header {
+  height: 64px;
+  overflow: hidden;
+}
+
+#header-region {
+  float: left;
+  width: 550px;
+}
+
+#search-box {
+  float: right;
+}
+
+#search-box label {
+  display: none;
+}
+
+#navigation {
+  background: #FAFBF6;
+  border: 1px solid #aaa;
+  border-left: none;
+  border-right: none;
+  clear: both;
+  margin: 10px 0;
+}
+
+#sidebar-left {
+  float: left;
+}
+
+#sidebar-right {
+  float: right;
+}
+
+#main {
+  float: left;
+  margin-top: 10px;
+}
+
+
+/* Site name and logo
+-------------------------------------------------------------- */
+#name-and-slogan {
+  float: left;
+  margin-right:34px;
+}
+
+#logo {
+  float: left;
+  margin-right: 14px;
+}
+
+h1#site-name {
+  font-family: Georgia, Garamond, Times New Roman, serif;
+  font-size: 42px;   /* TODO: convert pixels to ems / percentage */
+  margin: 0;
+}
+
+#site-name a {
+  color: #412B19;
+}
+
+#site-slogan {
+  
+}
+
+/* Footer Region
+-------------------------------------------------------------- */
+#footer {
+  border-top: 1px solid #bbb;
+  display: block;
+  font-size: 1em;
+  margin-top: 15px;
+  padding: 13px 0;
+  text-align: center;
+}
+
+#footer ul {
+  display: inline;
+  margin: 0;
+  padding: 0 0 0 9px;
+}
+
+#footer ul li {
+  background: transparent;
+  border-left: 1px solid #ccc;
+  display: inline;
+  padding: 0 5px 0 9px;
+}
+
+#footer ul li.first {
+  border: none;
+}
+
+
+/* Column Layouts
+-------------------------------------------------------------- */
+body.one-sidebar #main {
+  margin: 0;
+  width: 725px;
+}
+
+#sidebar-left {
+  margin: 0 15px 0 0;
+  width: 220px;
+}
+
+body.two-sidebars #main {
+  margin: 0 15px 0 0;
+  position: relative;
+  width: 490px;
+  z-index: 1;                    /* keep content visible on admin pages */
+}
+
+#sidebar-right {
+  margin: 0;
+  width: 220px;
+}
+
+
+/* Nodes
+-------------------------------------------------------------- */
+#content-content div.node {
+  margin: 0 0 16px;
+  padding: 0 0 10px;
+}
+
+div.node h2 {
+  border-bottom: 1px solid #D1D1D1;
+  margin: 0;
+  padding:0 0 2px;
+}
+
+div.node ul.links li,
+div.node ul.inline li,
+div.node .links a {
+  padding-right: 14px;
+}
+
+div.node ul.links li.last a {
+  padding-right: 0;
+}
+
+div.node .read-more a,
+div.node .more-link a,
+div.node .links a {
+  font-size: 1em;
+}  
+
+.submitted,
+.terms {                                      /* styling for byline and tags */
+  font-size: 0.9em;
+}
+
+.submitted a:link,
+.submitted a:visited {
+}
+
+.submitted a:visited,
+.submitted a:hover,
+.submitted a:active {
+}
+
+div.node div.meta {
+  font-size: 1em;
+  line-height: 1.667em;
+  margin-bottom: 1.667em;
+}
+
+div.meta div.submitted, div.meta div.terms {
+  display: inline;
+}
+
+div.node div.picture {
+  float: right;
+  margin: 0 0 2px 2px;
+}
+
+div.node ul.links {
+  display: block;
+}
+
+div.node div.meta ul.links {
+  padding: 0 14px 0 0;
+}
+
+div.node .comment_forbidden a {
+  padding: 0;
+}
+
+.node-unpublished {
+  background-color: #FFF0F0;
+  border: 1px solid #FFBABA;
+  padding: 8px;
+}
+
+.preview .node {
+  background-color: #FFFFDD;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+/* taxonomy */
+.vocab-name {
+  font-weight: bold;
+}
+
+.terms {
+  line-height: 130%;
+}
+
+.terms ul.taxonomy li {
+  background-image: none;
+  margin: 5px 0;
+  padding-left: 0;
+}
+
+.terms ul.taxonomy ul.vocab-list,
+.terms ul.taxonomy li.vocab-term {
+  display: inline;
+}
+
+.terms ul.taxonomy li.vocab-term {
+  background-image: none;
+  padding: 0 6px 0 0;
+}
+
+
+/* Blockquotes
+-------------------------------------------------------------- */
+.content blockquote p {
+  font-style: italic;
+  margin: 0;
+  padding: 8px 20px;
+}
+
+blockquote {
+  background: url('../images/close-quote.gif') no-repeat right bottom;
+  color: #5A6A78;
+  margin: 10px 0;
+}
+
+blockquote p:first-child {
+  background: url('../images/open-quote.gif') no-repeat left top;
+  padding: 0 0 0 20px;
+}
+
+blockquote * > :first-child {
+  background: transparent;
+  padding: 0;
+}
+
+blockquote a:link {
+  text-decoration: underline;
+}
+
+
+/* Blocks
+-------------------------------------------------------------- */
+/* for region labels on block admin page */
+div.block-region {
+  background-color: #ffff66;
+  color: #000;
+  font-family: Tahoma,Verdana,Arial,Helvetica,sans-serif;
+  font-size: 1.166em;
+  font-weight: 600;
+  margin-bottom: 4px;
+  margin-top: 4px;
+  padding: 3px;
+  text-align: center;
+}
+
+#blocks td.region {
+  font-size: 1.333em;
+}
+
+#sidebar-left div.block,
+#sidebar-right div.block {
+  background: #FAFBF6;
+  border: 1px solid #aaa;
+  box-shadow: 2px 2px 6px #cecece;
+  margin: 0 0 10px;
+  padding: 10px;
+  -moz-box-shadow: 2px 2px 6px #cecece;
+  -webkit-box-shadow: 2px 2px 6px #cecece;
+}
+
+#sidebar-left div.block:after,
+#sidebar-right div.block:after {
+  clear: both;
+  content: ".";
+  display: block;
+  font-size: 0;
+  height: 0;
+  visibility: hidden;
+}
+
+#sidebar-left div.block h2,
+#sidebar-right div.block h2 {
+  background: #E2DFD0;
+  border: 1px solid #aaa;
+  color: #333;
+  font-size: 18px;    /* TODO: convert pixels to ems / percentage */
+  margin: -6px -6px 10px;
+  padding: 4px 10px;
+}
+
+div.block .content {
+}
+
+div.block .submitted {                               /* byline styles in blocks */
+}
+
+div.block .submitted a:link {
+}
+
+div.block .submitted a:visited,
+div.block .submitted a:hover,
+div.block .submitted a:active {
+}
+
+
+/* Block Menus
+-------------------------------------------------------------- */
+.block ul.menu li a {								
+}
+
+.block ul.menu li {
+}
+
+.block ul.menu li a:link,
+.block ul.menu li a:visited {
+}
+
+.block ul.menu li a:hover,
+.block ul.menu li a:active {
+}
+
+
+/* Primary Menu
+-------------------------------------------------------------- */
+#primary {                                   /* menu layout */
+  display: block;
+  padding: 0;
+  position: relative;
+}
+
+#primary ul.links li { 
+  background: transparent;
+  border-right: 1px solid #aaa;
+  font-size: 18px;    /* TODO: convert pixels to ems / percentage */
+  line-height: 36px;    /* TODO: convert pixels to ems / percentage */
+}  
+
+#primary ul.links li a:link,
+#primary ul.links li a:visited {
+ color: #412B19;
+ padding: 6px 24px;
+}
+
+#primary ul.links li a:hover,
+#primary ul.links li a:active,
+#primary ul.links li a.active {
+  background: #412B19;
+  color: #fff;
+  text-decoration: none;
+}
+
+
+#primary ul.links li.first {                 /* .first and .last classes applied to first and last menu & list items */
+}
+  
+#primary ul.links li.last {                  /* .first and .last classes applied to first and last menu & list items */
+}
+
+ul.primary-links li {
+  float: left;
+  margin: 0;
+  padding: 0;
+}
+
+
+/* Secondary menu
+-------------------------------------------------------------*/
+#secondary {
+}
+
+#secondary ul.links li {
+  background-image: none;
+  padding: 0 8px 0 0;
+}
+
+#secondary ul.menu li {
+  background-image: none;
+  display: block;
+  float: left;
+  margin: 0;
+  padding: 0 8px 0 0;
+  position: relative;
+}
+
+
+/* Breadcrumbs
+-------------------------------------------------------------- */
+#breadcrumb {
+  font-size: 0.9em;
+}  
+
+.breadcrumb {
+}
+
+
+/* Drupal messages
+-------------------------------------------------------------- */
+.help {
+  background-color: #E4EEF8;
+  border: 6px solid #57718A;
+  color: #292929;
+  font-size: 1em;
+  font-weight: 600;
+  margin-bottom: 20px;
+  overflow: hidden;
+  padding: 10px 16px;
+}
+
+
+div.messages a:link,
+div.messages a:visited,
+.help a:link,
+.help a:visited,
+.help .more-help-link a:link,
+.help .more-help-link a:visited {
+  color: #0066B3;
+}
+
+div.messages a:hover,
+div.messages a:active,
+.help a:hover,
+.help a:active,
+.help .more-help-link a:hover,
+.help .more-help-link a:active {
+  color: #000;
+}
+
+div.messages,
+div.messages.status {
+  background-color: #EAF8E4;
+  border: 6px solid #8DC478;
+  color: #3E642F;
+  font-weight: 600;
+  font-size: 1em;
+  margin-bottom: 20px;
+  overflow: hidden;
+  padding: 14px;
+}
+
+div.messages.warning {
+  background: #FFFFDD;
+  border: 6px solid #EED300;
+  color: #745500;
+}
+
+div.messages a {
+}
+
+div.messages ul {
+  list-style-position: inside;
+}
+
+div.messages em {
+  color: #555;
+}
+
+div.error {
+  background-color: #FFF2F2;
+  border-color: #CC0000;
+  color: #B20000;
+}
+
+
+
+/* Tabs
+-------------------------------------------------------------------*/
+ul.primary,
+ul.primary li,
+ul.secondary,
+ul.secondary li {
+  background: none;
+}
+
+
+/* Forms
+-------------------------------------------------------------- */
+form {
+  margin: 0;
+  padding: 0;
+}
+
+.form-submit,
+textarea,
+input {
+  border: 1px solid #ccc;
+  font-size: 1em;
+  font-weight: normal;
+  margin: 0;
+  padding: 1px 4px;
+  vertical-align: text-bottom;
+}
+
+textarea {
+  line-height: 1.5em;
+  height: auto;
+  padding: 2px;
+}
+
+input.text, input.title,
+textarea, select {
+  border: 1px solid #bbb;
+  margin: 8px 0;
+}
+
+.form-submit:hover {
+  cursor: pointer;
+}  
+
+/* form-item styles */
+.form-item {
+}
+
+.form-item input,
+.form-item select,
+.form-item textarea,
+.form-item .resizable-textarea .grippie {
+}
+
+.form-item input.error,
+.form-item select.error,
+.form-item textarea.error {
+  border: 1px solid #dd7777;
+  background: #ffcccc;
+  color: #8a1f11;
+}
+
+.form-item strong.error {
+  display: block;
+}
+
+.form-item .description {
+  font-size: 0.9em;
+  line-height: 1.667em; /* more accurate line-height value */
+}
+
+.form-item .description img {
+  margin: 0;
+}
+
+/* form-text styles */
+.form-text {                                      /* default styling for all text fields */
+}
+
+input.form-text {
+  padding: 2px;
+}
+
+input.form-text:hover,
+input.text:hover,
+input.title:hover,
+textarea:hover,
+select:hover {
+  background: #fafafa;
+}
+
+input.form-text:focus,
+input.text:focus, input.title:focus,
+textarea:focus, select:focus {
+  border:1px solid #999;
+}
+
+/* fieldset styles */
+fieldset {
+  background: #ECECE0;
+  border: 1px solid #ccc;
+  margin: 0 0 22px 0;
+  padding: 20px;
+}
+
+fieldset legend {
+  background: #fff;
+  border: 1px solid #ccc;
+  display: block;
+  font-size: 1em;
+  font-weight: bold;
+  padding: 0 6px;
+}
+
+fieldset dl,
+fieldset select {
+  margin: 0;
+}
+
+/* prevent uncessary scrollbars */
+fieldset .collapsible {
+  overflow: hidden;
+}
+
+html.js fieldset.collapsed {
+  background: none;
+}
+
+/* legend styles */
+html.js fieldset.collapsible legend a {
+  background: transparent url('../images/menu-expanded.gif') no-repeat 0;
+  text-decoration: none;
+}
+
+html.js fieldset.collapsed legend a {
+  background: transparent url('../images/menu-collapsed.gif') no-repeat 0;
+}
+
+html.js fieldset legend:hover {
+  background-color: #f7f7f7;
+}
+
+div.resizable-textarea textarea {
+  margin-top: 0;
+}
+
+html.js input.form-autocomplete {
+  background-position: 100% 5px;
+  max-width: 96%;
+}
+
+/* form error styles */
+div.error, tr.error,
+span.form-required,
+span.marker {
+  color: #8a1f11;
+}
+
+/* theme settings form field width limit */
+form#system-theme-settings select,
+form#system-theme-settings input.form-text {
+  max-width: 95%;
+}
+
+/* keep theme select form visible */
+#system-themes-form {
+  position: relative;
+  z-index: 1;
+}
+
+/* keep theme switcher visible */
+.form-item select#edit-theme {
+  max-width: none;
+}
+
+
+/* Tables
+-------------------------------------------------------------- */
+table {
+  border-collapse: collapse;
+  margin-bottom: 1em;
+  width: 100%;
+}
+
+th,
+thead th {
+  color: #333;
+  text-align: left;
+  padding-right: 1em;
+  border-bottom: 1px solid #ccc;
+}
+
+tbody {
+}
+
+tbody th {
+  border-bottom: 1px solid #ccc;
+}
+
+tr {
+  padding: 0.1em 0.6em;
+}
+
+td {
+  padding: 3px;
+}
+
+td.active {
+  background: none;
+}
+
+th.active img {
+  display: inline;
+}
+
+tr.even {
+  background-color: #ECECE0;
+  border-bottom: 1px solid #ccc;
+}
+
+tr.odd {
+  background-color: #fff;
+  border-bottom: 1px solid #ccc;
+}
+
+tr.selected {
+  color: #000
+}
+
+table.sticky-header {
+  background: #fff;
+}
+
+tfoot {
+  font-style: italic;
+}
+
+caption {
+  background: #eee;
+}
+
+tr.drag,
+tr.drag-previous {
+  background: #ffffdd;
+}
+
+
+/* Pagers
+-------------------------------------------------------------- */
+ul.pager {
+  font-size: 0.9em;
+  line-height: 1.667em;
+  margin: 20px 0;
+}
+
+ul.pager li {
+  line-height: 2.5em;
+  margin: 0;
+  white-space: nowrap;
+}
+
+ul.pager a,
+ul.pager li.pager-current {
+  border: 1px solid #412B19;
+  padding: 3px 6px;
+  text-decoration: none;
+}
+
+ul.pager li.pager-current {
+  background: #412B19;
+  color: #fff;
+}
+
+ul.pager a:link,
+ul.pager a:visited {
+  color: #412B19;
+}
+
+ul.pager a:hover,
+ul.pager a:active,
+ul.pager a:focus {
+  background-color: #412B19;
+  border: 1px solid #412B19;
+  color: #fff;
+}
+
+ul.pager span.pager-ellipsis {
+  padding: 0 4px;
+}
+
+.item-list .pager li {
+  padding: 0;
+}
+
+
+/* Admin page(s)
+-------------------------------------------------------------- */
+div.admin {
+  padding-top: 0; /* fix alignment of admin panel */
+}
+
+/* keep admin columns from dropping under */
+div.admin .left,
+div.admin .right {
+  margin-left: 1%;
+  margin-right: 1%;
+}
+
+div.admin-panel {
+  padding: 20px 0 0 0;
+}
+
+div.admin-panel .body {
+  padding: 0;
+}
+
+div.admin-panel .description {
+  margin: 0 0 20px 0;
+  padding: 0;
+}
+
+#user-admin-filter ul li,
+#node-admin-filter ul li {
+  list-style: none; /* remove list style from content node filter */
+}
+
+div.admin-dependencies,
+div.admin-required {
+}
+

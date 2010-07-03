@@ -1,0 +1,19 @@
+; $Id: panany.info,v 1.1 2010/01/11 05:35:12 jwolf Exp $
+
+name = hookdrupal
+description = Hook Drupal Theme, based on Panany
+core = 6.x
+
+stylesheets[all][] = css/hookdrupal.css
+
+plugins[panels][layouts] = plugins/layouts
+
+features[] = logo
+features[] = name
+features[] = node_user_picture
+features[] = comment_user_picture
+features[] = search
+features[] = favicon
+features[] = primary_links
+
+engine = phptemplate
