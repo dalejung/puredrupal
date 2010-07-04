@@ -40,9 +40,11 @@ function panels_template_base_panels_template_applicable_types() {
   $enabled['homepage'] = array();
   $enabled['homepage'][] = 'right_column';
   $enabled['homepage'][] = 'homepage';
+  $enabled['homepage'][] = 'site_template';
   $enabled['article'] = array();
   $enabled['article'][] = 'right_column';
   $enabled['article'][] = 'article';
+  $enabled['article'][] = 'site_template';
   return $enabled;
 }
 

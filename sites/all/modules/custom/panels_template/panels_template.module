@@ -30,6 +30,9 @@ function panels_template_menu() {
   return _panels_template_menu();
 }
 
+/**
+ * Implementation of hook_theme_registry_alter().
+ */
 function panels_template_theme_registry_alter(&$reg) {
   $layouts = panels_get_layouts();
   // Add a preprocess function for each panels layout
@@ -98,6 +101,10 @@ function panels_template_load($name) {
     if (empty($result[$name]->display)) {
       $result[$name]->display = panels_load_display($result[$name]->did);
     }
+    /**
+     * TODO: This is ugly as hell. Not sure if this is the best place to put this
+     *
+     */
     // Always default first context to the Node being viewed
     $result[$name]->contexts[0] = array(
       'name' => 'panels_template_node',
@@ -105,6 +112,32 @@ function panels_template_load($name) {
       'identifier' => t('Node being viewed'),
       'keyword' => 'node',
     );
+    // Panel Everywhere Support
+    $args = array(
+        array(
+          'keyword' => 'url',
+          'identifier' => t('URL'),
+          'id' => 1,
+          'name' => 'string',
+          'settings' => array(),
+        ),
+        array(
+          'keyword' => 'content',
+          'identifier' => t('Page content'),
+          'id' => 1,
+          'name' => 'page_content',
+          'settings' => array(),
+        ),
+        array(
+          'keyword' => 'page',
+          'identifier' => t('Managed page'),
+          'id' => 1,
+          'name' => 'managed_page',
+          'settings' => array(),
+        ),
+      );
+    $result[$name]->arguments = $args;
+
     return $result[$name];
   }
 }
@@ -253,24 +286,40 @@ function panels_template_panel_task_override(&$handler,$display) {
   }
 }
 
+function panels_template_task_cascade($type, &$node=NULL) {
+  // Node is final say
+  $template_types = panels_template_get_template_types();
+  if($node) {
+    foreach ((array) $node->panels_template as $key=>$template) {
+      if ($template_types[$key] && $template_types[$key]['parent'] == $type) {
+        return $override = $node->panels_template[$key];
+      }
+    }
+  }
+
+  if (!function_exists('context_get_plugin')) { 
+    return;
+  }
+
+  // check context
+  foreach($template_types as $type => $template) {
+    if($template['parent'] != $type) {
+      continue;;
+    }
+
+    $plugin = context_get_plugin('reaction','panels_template');
+    $override = $plugin->get_template($type);
+    if($override) {
+      return $override;
+    }
+  }
+}
+
 function panels_template_node_view_task_override(&$handler,$display) {
 
   $node = $display->context['argument_nid_1']->data;
 
-	// Node specific template. This is set on node edit form
-	// Overtake the node_view display if the template is a node_view
-	// template
-  $template_types = panels_template_get_template_types();
-  foreach ((array) $node->panels_template as $key=>$template) {
-    if ($template_types[$key] && $template_types[$key]['parent'] == 'node_view') {
-      $name = $node->panels_template[$key];
-    }
-  }
-
-	// Default to the _default
-  if (!$name) {
-    $name = $node->type . '_default';
-  }
+  $name = panels_template_task_cascade('node_view', $node);  
 
   $templates = panels_template_load_all();
   $template = $templates[$name];
@@ -285,24 +334,11 @@ function panels_template_node_view_task_override(&$handler,$display) {
 
 function panels_template_site_template_task_override(&$handler,$display) {
 
-  $node = $display->context['argument_nid_1']->data;
+  $node = $display->context['context_panels_template_node_1']->data;
   $args = $display->args;
   $content = $args[1]->content;
 
-	// Node specific template. This is set on node edit form
-	// Overtake the node_view display if the template is a node_view
-	// template
-  $template_types = panels_template_get_template_types();
-  foreach ((array) $node->panels_template as $key=>$template) {
-    if ($template_types[$key] && $template_types[$key]['parent'] == 'site_template') {
-      $name = $node->panels_template[$key];
-    }
-  }
-
-	// Default to the _default
-  if (!$name) {
-    $name = $node->type . '_default';
-  }
+  $name = panels_template_task_cascade('site_template', $node);  
 
   $templates = panels_template_load_all();
   $template = $templates[$name];
