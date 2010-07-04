@@ -24,8 +24,11 @@ $conf['cache_inc'] ='sites/all/modules/contrib/memcache/memcache.inc';
 $conf['memcache_servers'] = array(
   'localhost:36841' => 'default',
   'localhost:36842' => 'node',
+  'localhost:36843' => 'window_cache',
 );
 $conf['memcache_bins'] = array(
   'cache_page' => 'default',
   'cache_node' => 'node',
+  'cache_windows' => 'window_cache',
+  'cache_signals' => 'window_cache',
 );
