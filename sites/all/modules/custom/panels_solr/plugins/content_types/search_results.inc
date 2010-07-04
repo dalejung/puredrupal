@@ -11,8 +11,7 @@ function panels_solr_search_results_ctools_content_types() {
 
 function panels_solr_search_results_content_type_render($subtype, $conf, $panel_args, $context) {
 
-	$menu = menu_get_item();
-	$search_path = $menu['path'];
+  $search_path = panels_solr_search_path();
 	$content = panels_solr_search_view($search_path);
 
   $block->content = $content;

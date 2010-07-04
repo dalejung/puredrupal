@@ -13,8 +13,7 @@ function panels_solr_search_form_ctools_content_types() {
 function panels_solr_search_form_content_type_render($subtype, $conf, $panel_args, $context) {
 
 	$type = 'panels_solr';
-	$menu = menu_get_item();
-	$search_path = url($menu['path']);
+  $search_path = panels_solr_search_path();
 
 	$keys = trim(panels_solr_get_keys());
 	$content = drupal_get_form('search_form', $search_path, $keys, $type);

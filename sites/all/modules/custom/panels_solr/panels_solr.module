@@ -8,6 +8,15 @@ function panels_solr_ctools_plugin_directory($module,$plugin) {
   }
 }
 
+function panels_solr_search_path() {
+	$menu = menu_get_item();
+  $path = $_GET['q'];
+	$keys = trim(panels_solr_get_keys());
+  $length = strlen($path) - strlen($keys); 
+  $search_path = '/'.substr($path, 0, $length);
+  return $search_path;
+}
+
 function panels_solr_search_view($search_path) {
 	static $results;
 	if($results) {
