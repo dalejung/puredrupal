@@ -1,0 +1,16 @@
+<?php
+
+function window_cache_schema() {
+
+	$schema['cache_windows'] = drupal_get_schema_unprocessed('system', 'cache');
+  $schema['cache_windows']['description'] = 'Stores the serialized window';
+
+	$schema['cache_signals'] = drupal_get_schema_unprocessed('system', 'cache');
+  $schema['cache_signals']['description'] = 'Stores the window cache signals';
+
+	return $schema;
+}
+
+function window_cache_install() {
+  drupal_install_schema('window_cache');
+}

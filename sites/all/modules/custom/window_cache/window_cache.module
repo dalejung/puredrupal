@@ -1,0 +1,20 @@
+<?php
+
+require('window_cache.core.inc');
+require('grains.inc');
+require('panels/window_cache.panels.inc');
+require('signals/window_cache.signal.inc');
+
+function window_cache_init() {
+  $dale = new stdClass();
+}
+
+function window_cache_exit($destination = NULL) {
+  $log = wc_log();
+}
+
+function window_cache_ctools_plugin_directory($module, $plugin) {
+	if ($module == 'panels') {
+		return 'plugins/' . $plugin;
+	}
+}
