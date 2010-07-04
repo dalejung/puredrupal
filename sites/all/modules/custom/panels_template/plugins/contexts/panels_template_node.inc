@@ -10,20 +10,17 @@
 /**
  * Implementation of specially named hook_ctools_contexts().
  */
-function panels_template_panels_template_node_ctools_contexts() {
-  $args['panels_template_node'] = array(
-    'title' => t("Node being viewed"),
-    'description' => t('Node being viewed'),
-    'context' => 'panels_template_context_create_term',
-    'settings form' => 'panels_template_context_panels_template_node_settings_form',
-    'settings form validate' => 'panels_template_context_panels_template_node_settings_form_validate',
-    'settings form submit' => 'panels_template_context_panels_template_node_settings_form_submit',
-    'keyword' => 'node',
-    'context name' => 'panels-template-node',
-    'js' => array('misc/autocomplete.js'),
-  );
-  return $args;
-}
+$plugin = array(
+  'title' => t("Node being viewed"),
+  'description' => t('Node being viewed'),
+  'context' => 'panels_template_context_create_term',
+  'settings form' => 'panels_template_context_panels_template_node_settings_form',
+  'settings form validate' => 'panels_template_context_panels_template_node_settings_form_validate',
+  'settings form submit' => 'panels_template_context_panels_template_node_settings_form_submit',
+  'keyword' => 'node',
+  'context name' => 'panels-template-node',
+  'js' => array('misc/autocomplete.js'),
+);
 
 /**
  * It's important to remember that $conf is optional here, because contexts

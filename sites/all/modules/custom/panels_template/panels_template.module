@@ -46,18 +46,6 @@ function panels_template_theme_registry_alter(&$reg) {
 }
 
 /*
- * TODO: Split out from this module
- */
-function panels_template_theme_registry_post_alter(&$reg) {
-  $preprocess = &$reg['page']['preprocess functions'];
-  $i = array_search('context_page_alter', $preprocess);
-  if($i) {
-    array_splice($preprocess, $i, 1);
-  }
-  array_unshift($preprocess, 'context_page_alter');
-}
-
-/*
   If the display theme was set, create the template suggestion
 */
 function panels_template_preprocess_panels_layout(&$vars) {
@@ -110,7 +98,7 @@ function panels_template_load($name) {
     if (empty($result[$name]->display)) {
       $result[$name]->display = panels_load_display($result[$name]->did);
     }
-    // Always default frist context to the Node being viewed
+    // Always default first context to the Node being viewed
     $result[$name]->contexts[0] = array(
       'name' => 'panels_template_node',
       'id' => 1,
