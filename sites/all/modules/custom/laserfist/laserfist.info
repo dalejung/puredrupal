@@ -1,5 +1,0 @@
-; $Id$
-name = Laserfist
-description = "Drupal: Laserfist Edition"
-package = "Laserfist"
-core = 6.x
