@@ -1,0 +1,14 @@
+<?php
+
+/*
+ * context_page_alter needs to run first. At least for now 
+ */
+function pure_theme_registry_post_alter(&$reg) {
+  $preprocess = &$reg['page']['preprocess functions'];
+  $i = array_search('context_page_alter', $preprocess);
+  if($i) {
+    array_splice($preprocess, $i, 1);
+  }
+  array_unshift($preprocess, 'context_page_alter');
+}
+
