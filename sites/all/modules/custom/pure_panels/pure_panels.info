@@ -1,0 +1,5 @@
+name = Pure Panels
+description = Pure Panels System
+package = "Pure Panels"
+dependencies[] = panels
+core = 6.x

@@ -2,20 +2,20 @@
 /**
  * Provide a context driven right column for panel nodes
  */
-function panels_template_region_handler($type) {
+function pure_panels_region_handler($type) {
   // Right nid from node
   $node = menu_get_object();
-  return panels_template_region_render($type, $node);
+  return pure_panels_region_render($type, $node);
 }
 
-function panels_template_region_render($type, $node=null) {
+function pure_panels_region_render($type, $node=null) {
   // Grab default from context 
   if (function_exists('context_get_plugin')) { 
-    $plugin = context_get_plugin('reaction','panels_template');
+    $plugin = context_get_plugin('reaction','pure_panels');
     $default = $plugin->get_template($type);
   }
 
-  $override = $node->panels_template[$type];
+  $override = $node->pure_panels[$type];
 
   $final = $override ? $override : $default;
 
@@ -24,7 +24,7 @@ function panels_template_region_render($type, $node=null) {
   }
 
 
-  $display = panels_template_grab_display($final);
+  $display = pure_panels_grab_display($final);
   if (!$display) {
     return;
   }
@@ -32,32 +32,32 @@ function panels_template_region_render($type, $node=null) {
   return $content;
 }
 
-function panels_template_context_plugins() {
-  $plugins = panels_template_context_reactions();
+function pure_panels_context_plugins() {
+  $plugins = pure_panels_context_reactions();
   return $plugins;
 }
 
-function panels_template_context_registry() {
+function pure_panels_context_registry() {
   $registry = array();
   $registry['reactions'] =  array(
-    'panels_template' => array(
+    'pure_panels' => array(
       'title' => 'Panels Template',
       'description' => 'Control Panel Template Regions',
-      'plugin' => 'panels_template_reaction'   
+      'plugin' => 'pure_panels_reaction'   
      ),
   );
 
   return $registry;
 }
 
-function panels_template_context_reactions() {
+function pure_panels_context_reactions() {
   $plugins = array();
 
-  $plugins['panels_template_reaction'] = array(
+  $plugins['pure_panels_reaction'] = array(
     'handler' => array(
-    'path' => drupal_get_path('module', 'panels_template'). '/plugins',
+    'path' => drupal_get_path('module', 'pure_panels'). '/plugins',
     'file' => 'context.reactions.inc',
-    'class' => 'panels_template_reaction',
+    'class' => 'pure_panels_reaction',
     'parent' => 'context_reaction',
     ),
   );
@@ -69,7 +69,7 @@ function panels_template_context_reactions() {
  * default values. If ANY context that is not sidewide has the panel node set
  * it will blank the default ones
  */
-function panels_template_context_active_contexts_alter(&$contexts) {
+function pure_panels_context_active_contexts_alter(&$contexts) {
   $defaults = array();
   $overrides = array();
   foreach ($contexts as $context) {
@@ -83,15 +83,15 @@ function panels_template_context_active_contexts_alter(&$contexts) {
 
   foreach ($overrides as $override) {
     // Right
-    if ($override->panels_template_right_column) {
+    if ($override->pure_panels_right_column) {
       foreach ($defaults as $default) {
-        unset($default->panels_template_right_column);
+        unset($default->pure_panels_right_column);
       }
     }
     // Left
-    if ($override->panels_template_left_column) {
+    if ($override->pure_panels_left_column) {
       foreach ($defaults as $default) {
-        unset($default->panels_template_left_column);
+        unset($default->pure_panels_left_column);
       }
     }
   }

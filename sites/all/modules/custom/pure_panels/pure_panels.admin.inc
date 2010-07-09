@@ -1,6 +1,4 @@
 <?php
-// $Id: panels_template.admin.inc,v 1.6.2.9 2009/09/08 16:23:48 merlinofchaos Exp $
-
 /**
  * @file
  *
@@ -10,113 +8,113 @@
 /**
  * Implementation of hook_menu().
  */
-function _panels_template_menu() {
+function _pure_panels_menu() {
   // Provide some common options to reduce code repetition.
   // By using array addition and making sure these are the rightmost
   // value, they won't override anything already set.
   $base = array(
     'access arguments' => array('create template panels'),
-    'file' => 'panels_template.admin.inc',
+    'file' => 'pure_panels.admin.inc',
   );
 
   $items['admin/build/panel-template'] = array(
     'title' => 'Panel Templates',
-    'page callback' => 'panels_template_list_page',
+    'page callback' => 'pure_panels_list_page',
     'description' => 'Create and adtemplatester template panels (panels exposed as blocks).',
   ) + $base;
   $items['admin/build/panel-template/list'] = array(
     'title' => 'List',
-    'page callback' => 'panels_template_list_page',
+    'page callback' => 'pure_panels_list_page',
     'weight' => -10,
     'type' => MENU_DEFAULT_LOCAL_TASK,
   ) + $base;
   $items['admin/build/panel-template/add'] = array(
     'title' => 'Add',
-    'page callback' => 'panels_template_add_page',
+    'page callback' => 'pure_panels_add_page',
     'type' => MENU_LOCAL_TASK,
   ) + $base;
   $items['admin/build/panel-template/import'] = array(
     'title' => 'Import',
-    'page callback' => 'panels_template_import_template',
+    'page callback' => 'pure_panels_import_template',
     'type' => MENU_LOCAL_TASK,
   ) + $base;
   $items['admin/build/panel-template/settings'] = array(
     'title' => 'Settings',
-    'page callback' => 'panels_template_settings',
+    'page callback' => 'pure_panels_settings',
     'type' => MENU_LOCAL_TASK,
   ) + $base;
   // Also provide settings on the main panel UI
   $items['admin/build/panels/settings/panels-template'] = array(
     'title' => 'Panel Templates',
-    'page callback' => 'panels_template_settings',
+    'page callback' => 'pure_panels_settings',
     'type' => MENU_LOCAL_TASK,
   ) + $base;
   $items['admin/build/panel-template/disable'] = array(
-    'page callback' => 'panels_template_disable_page',
+    'page callback' => 'pure_panels_disable_page',
     'weight' => -1,
     'type' => MENU_CALLBACK,
   ) + $base;
   $items['admin/build/panel-template/enable'] = array(
-    'page callback' => 'panels_template_enable_page',
+    'page callback' => 'pure_panels_enable_page',
     'weight' => -1,
     'type' => MENU_CALLBACK,
   ) + $base;
 
   $base['access arguments'] = array('adtemplatester template panels');
 
-  $items['admin/build/panel-template/%panels_template_admin'] = array(
+  $items['admin/build/panel-template/%pure_panels_admin'] = array(
     'title' => 'Preview',
-    'page callback' => 'panels_template_preview_panel',
+    'page callback' => 'pure_panels_preview_panel',
     'page arguments' => array(3),
     'weight' => -10,
     'type' => MENU_CALLBACK,
   ) + $base;
-  $items['admin/build/panel-template/%panels_template_admin/preview'] = array(
+  $items['admin/build/panel-template/%pure_panels_admin/preview'] = array(
     'title' => 'Preview',
-    'page callback' => 'panels_template_preview_panel',
+    'page callback' => 'pure_panels_preview_panel',
     'page arguments' => array(3),
     'weight' => -10,
     'type' => MENU_DEFAULT_LOCAL_TASK,
   ) + $base;
-  $items['admin/build/panel-template/%panels_template_admin/edit-layout'] = array(
+  $items['admin/build/panel-template/%pure_panels_admin/edit-layout'] = array(
     'title' => 'Layout',
-    'page callback' => 'panels_template_edit_layout',
+    'page callback' => 'pure_panels_edit_layout',
     'page arguments' => array(3),
     'weight' => -9,
     'type' => MENU_LOCAL_TASK,
   ) + $base;
-  $items['admin/build/panel-template/%panels_template_admin/edit-general'] = array(
+  $items['admin/build/panel-template/%pure_panels_admin/edit-general'] = array(
     'title' => 'Settings',
-    'page callback' => 'panels_template_edit',
+    'page callback' => 'pure_panels_edit',
     'page arguments' => array(3),
     'weight' => -5,
     'type' => MENU_LOCAL_TASK,
   ) + $base;
-  $items['admin/build/panel-template/%panels_template_admin/edit-context'] = array(
+  $items['admin/build/panel-template/%pure_panels_admin/edit-context'] = array(
     'title' => 'Context',
-    'page callback' => 'panels_template_edit_context',
+    'page callback' => 'pure_panels_edit_context',
     'page arguments' => array(3),
     'weight' => -2,
     'type' => MENU_LOCAL_TASK,
   ) + $base;
-  $items['admin/build/panel-template/%panels_template_admin/edit-content'] = array(
+  $items['admin/build/panel-template/%pure_panels_admin/edit-content'] = array(
     'title' => 'Content',
-    'page callback' => 'panels_template_edit_content',
+    'page callback' => 'pure_panels_edit_content',
     'page arguments' => array(3),
     'weight' => -1,
     'type' => MENU_LOCAL_TASK,
   ) + $base;
-  $items['admin/build/panel-template/%panels_template_admin/export'] = array(
+  $items['admin/build/panel-template/%pure_panels_admin/export'] = array(
     'title' => 'Export',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('panels_template_edit_export', 3),
+    'page arguments' => array('pure_panels_edit_export', 3),
     'weight' => 0,
     'type' => MENU_LOCAL_TASK,
   ) + $base;
-  $items['admin/build/panel-template/%panels_template_admin/delete'] = array(
+  $items['admin/build/panel-template/%pure_panels_admin/delete'] = array(
     'title' => 'Delete template panel',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('panels_template_delete_confirm', 3),
+    'page arguments' => array('pure_panels_delete_confirm', 3),
     'type' => MENU_CALLBACK,
   ) + $base;
 
@@ -126,15 +124,15 @@ function _panels_template_menu() {
 /**
  * Settings for template panels.
  */
-function panels_template_settings() {
+function pure_panels_settings() {
   panels_load_include('common');
-  return drupal_get_form('panels_common_settings', 'panels_template');
+  return drupal_get_form('panels_common_settings', 'pure_panels');
 }
 
 /**
  * Provide a list of template panels, with links to edit or delete them.
  */
-function panels_template_list_page() {
+function pure_panels_list_page() {
   panels_load_include('plugins');
   $layouts = panels_get_layouts();
   $items = array();
@@ -151,7 +149,7 @@ function panels_template_list_page() {
   $ts = tablesort_init($header);
 
   // Load all template panels and their displays.
-  $panel_templates = panels_template_load_all(TRUE);
+  $panel_templates = pure_panels_load_all(TRUE);
 
   foreach ($panel_templates as $panel_template) {
     $ops = array();
@@ -221,9 +219,9 @@ function panels_template_list_page() {
 /**
  * Provide a form to confirm deletion of a template panel.
  */
-function panels_template_delete_confirm(&$form_state, $panel_template) {
+function pure_panels_delete_confirm(&$form_state, $panel_template) {
   if (!is_object($panel_template)) {
-    $panel_template = panels_template_load($panel_template);
+    $panel_template = pure_panels_load($panel_template);
   }
   $form['name'] = array('#type' => 'value', '#value' => $panel_template->name);
   $form['did'] = array('#type' => 'value', '#value' => $panel_template->did);
@@ -238,23 +236,23 @@ function panels_template_delete_confirm(&$form_state, $panel_template) {
 /**
  * Handle the submit button to delete a template panel.
  */
-function panels_template_delete_confirm_submit($form, &$form_state) {
-  $template = panels_template_load($form_state['values']['name']);
-  panels_template_delete($template);
+function pure_panels_delete_confirm_submit($form, &$form_state) {
+  $template = pure_panels_load($form_state['values']['name']);
+  pure_panels_delete($template);
   $form_state['redirect'] = 'admin/build/panel-template';
 }
 
 /**
  * Provide an adtemplatestrative preview of a template panel.
  */
-function panels_template_preview_panel($template) {
+function pure_panels_preview_panel($template) {
   $template->display->args = array();
-  $template->display->css_id = panels_template_get_id($template->name);
+  $template->display->css_id = pure_panels_get_id($template->name);
 
-  drupal_add_js(drupal_get_path('module', 'panels_template') . '/panels_template.js');
+  drupal_add_js(drupal_get_path('module', 'pure_panels') . '/pure_panels.js');
   $theme = variable_get('theme_default', 'zen');
   drupal_add_css(drupal_get_path('theme',$theme).'/' . $theme .'.css');
-  drupal_add_css($path = drupal_get_path('module', 'panels_template') . '/panels_template.css');
+  drupal_add_css($path = drupal_get_path('module', 'pure_panels') . '/pure_panels.css');
 
   ctools_include('context');
   $template->context = $template->display->context = ctools_context_load_contexts($template);
@@ -266,12 +264,12 @@ function panels_template_preview_panel($template) {
 /**
  * Page callback to export a template panel to PHP code.
  */
-function panels_template_edit_export(&$form_state, $panel_template) {
+function pure_panels_edit_export(&$form_state, $panel_template) {
   if (!is_object($panel_template)) {
-    $panel_template = panels_template_load($panel_template);
+    $panel_template = pure_panels_load($panel_template);
   }
   drupal_set_title(check_plain($panel_template->title));
-  $code = panels_template_export($panel_template);
+  $code = pure_panels_export($panel_template);
 
   $lines = substr_count($code, "\n");
   $form['code'] = array(
@@ -286,20 +284,20 @@ function panels_template_edit_export(&$form_state, $panel_template) {
 /**
  * Page callback to import a template panel from PHP code.
  */
-function panels_template_import_template() {
-  if (isset($_POST['form_id']) && $_POST['form_id'] == 'panels_template_edit_form') {
+function pure_panels_import_template() {
+  if (isset($_POST['form_id']) && $_POST['form_id'] == 'pure_panels_edit_form') {
     $panel_template = unserialize($_SESSION['pm_import']);
     drupal_set_title(t('Import panel template "@s"', array('@s' => $panel_template->title)));
-    return drupal_get_form('panels_template_edit_form', $panel_template);
+    return drupal_get_form('pure_panels_edit_form', $panel_template);
   }
 
-  return drupal_get_form('panels_template_import_form');
+  return drupal_get_form('pure_panels_import_form');
 }
 
 /**
  * Form for the template panel import.
  */
-function panels_template_import_form() {
+function pure_panels_import_form() {
   $form['panel_template'] = array(
     '#type' => 'textarea',
     '#title' => t('Panel template code'),
@@ -320,7 +318,7 @@ function panels_template_import_form() {
 /**
  * Handle the submit button on importing a template panel.
  */
-function panels_template_import_form_submit($form, &$form_state) {
+function pure_panels_import_form_submit($form, &$form_state) {
   ob_start();
   eval($form_state['values']['panel_template']);
   ob_end_clean();
@@ -331,7 +329,7 @@ function panels_template_import_form_submit($form, &$form_state) {
     // As $template contains non-stdClass objects,
     // it needs to be serialized before being stored in the session variable.
     $_SESSION['pm_import'] = serialize($template);
-    $output = drupal_get_form('panels_template_edit_form', $template);
+    $output = drupal_get_form('pure_panels_edit_form', $template);
     print theme('page', $output);
     exit;
   }
@@ -343,10 +341,10 @@ function panels_template_import_form_submit($form, &$form_state) {
 /**
  * Handle the add template panel page.
  */
-function panels_template_add_page($layout = NULL) {
+function pure_panels_add_page($layout = NULL) {
   panels_load_include('plugins');
   panels_load_include('common');
-  $layouts = panels_common_get_allowed_layouts('panels_template');
+  $layouts = panels_common_get_allowed_layouts('pure_panels');
   $output = '';
 
   if ($layout === NULL) {
@@ -371,7 +369,7 @@ function panels_template_add_page($layout = NULL) {
   $panel_template->category = '';
 
   drupal_set_title(t('Add template panel'));
-  return panels_template_edit($panel_template);
+  return pure_panels_edit($panel_template);
 }
 
 /**
@@ -379,21 +377,21 @@ function panels_template_add_page($layout = NULL) {
  *
  * Called from both the add and edit points to provide for common flow.
  */
-function panels_template_edit($panel_template) {
+function pure_panels_edit($panel_template) {
   if (!is_object($panel_template)) {
-    $panel_template = panels_template_load($panel_template);
+    $panel_template = pure_panels_load($panel_template);
   }
   if ($panel_template) {
     drupal_set_title(check_plain($panel_template->title));
   }
 
-  return drupal_get_form('panels_template_edit_form', $panel_template);
+  return drupal_get_form('pure_panels_edit_form', $panel_template);
 }
 
 /**
  * Form to edit the settings of a template panel.
  */
-function panels_template_edit_form(&$form_state, $panel_template) {
+function pure_panels_edit_form(&$form_state, $panel_template) {
   panels_load_include('common');
   panels_load_include('plugins');
   drupal_add_css(panels_get_path('css/panels_admin.css'));
@@ -437,7 +435,7 @@ function panels_template_edit_form(&$form_state, $panel_template) {
     '#description' => t('A unique name used to identify this panel page internally. It must be only be alpha characters and underscores. No spaces, numbers or uppercase characters.'),
   );
 
-  $template_types = panels_template_get_template_types();
+  $template_types = pure_panels_get_template_types();
   $options = array();
   foreach ($template_types as $name => $type) {
     $options[$name] = $type['label'];
@@ -504,7 +502,7 @@ function panels_template_edit_form(&$form_state, $panel_template) {
 /**
  * Validate submission of the template panel edit form.
  */
-function panels_template_edit_form_validate($form, &$form_state) {
+function pure_panels_edit_form_validate($form, &$form_state) {
   // Test uniqueness of name:
   if (!$form_state['values']['name']) {
     form_error($form['left']['settings']['name'], t('Panel template name is required.'));
@@ -516,7 +514,7 @@ function panels_template_edit_form_validate($form, &$form_state) {
     form_error($form['left']['settings']['category'], t('Categories may contain only alphanumerics or spaces.'));
   }
   else {
-    $query = "SELECT pid FROM {panels_template} WHERE name = '%s'";
+    $query = "SELECT pid FROM {pure_panels} WHERE name = '%s'";
     if (!empty($form_state['values']['pid']) && is_numeric($form_state['values']['pid'])) {
       $query .= ' AND pid != ' . $form_state['values']['pid'];
     }
@@ -529,7 +527,7 @@ function panels_template_edit_form_validate($form, &$form_state) {
 /**
  * Process submission of the template panel edit form.
  */
-function panels_template_edit_form_submit($form, &$form_state) {
+function pure_panels_edit_form_submit($form, &$form_state) {
   $panel_template = $form_state['values']['panel_template'];
   $panel_template->title = $form_state['values']['title'];
   $panel_template->name = $form_state['values']['name'];
@@ -539,7 +537,7 @@ function panels_template_edit_form_submit($form, &$form_state) {
   if (isset($panel_template->pid) && $panel_template->pid == 'new') {
     unset($_SESSION['pm_import']);
     drupal_set_message(t('Your new template panel %title has been saved.', array('%title' => $panel_template->title)));
-    panels_template_save($panel_template);
+    pure_panels_save($panel_template);
     $form_state['values']['pid'] = $panel_template->pid;
 
     $layout = panels_get_layout($panel_template->display->layout);
@@ -548,14 +546,14 @@ function panels_template_edit_form_submit($form, &$form_state) {
   }
   else {
     drupal_set_message(t('Your changes have been saved.'));
-    panels_template_save($panel_template);
+    pure_panels_save($panel_template);
   }
 }
 
 /**
  * Form to edit context features of a template panel.
  */
-function panels_template_edit_context($panel_template, $next = NULL) {
+function pure_panels_edit_context($panel_template, $next = NULL) {
   ctools_include('context-admin');
   ctools_context_admin_includes();
 
@@ -567,13 +565,13 @@ function panels_template_edit_context($panel_template, $next = NULL) {
   }
 
   drupal_set_title(check_plain($panel_template->title));
-  return drupal_get_form('panels_template_context_form', $panel_template, $next);
+  return drupal_get_form('pure_panels_context_form', $panel_template, $next);
 }
 
 /**
  * Form to edit the context settings of a template panel.
  */
-function panels_template_context_form(&$form_state, $panel_template, $next = NULL) {
+function pure_panels_context_form(&$form_state, $panel_template, $next = NULL) {
   drupal_add_css(panels_get_path('css/panels_admin.css'));
   panels_load_include('plugins');
   $layout = panels_get_layout($panel_template->display->layout);
@@ -610,11 +608,11 @@ function panels_template_context_form(&$form_state, $panel_template, $next = NUL
 /**
  * Process submission of the template panel edit form.
  */
-function panels_template_context_form_submit($form, &$form_state) {
+function pure_panels_context_form_submit($form, &$form_state) {
   $panel_template = $form_state['panel_template'];
 
   drupal_set_message(t('Your changes have been saved.'));
-  panels_template_save($panel_template);
+  pure_panels_save($panel_template);
   ctools_object_cache_clear('context_object:panel_template', $panel_template->name);
   if ($form_state['values']['submit'] == t('Save and proceed')) {
     $form_state['redirect'] = "admin/build/panel-template/{$panel_template->name}/edit-content";
@@ -624,40 +622,40 @@ function panels_template_context_form_submit($form, &$form_state) {
 /**
  * Enable a default template panel.
  */
-function panels_template_enable_page($name = NULL) {
+function pure_panels_enable_page($name = NULL) {
   ctools_include('export');
-  ctools_export_set_status('panels_template', $name, FALSE);
+  ctools_export_set_status('pure_panels', $name, FALSE);
   drupal_goto();
 }
 
 /**
  * Disable a default template panel.
  */
-function panels_template_disable_page($name = NULL) {
+function pure_panels_disable_page($name = NULL) {
   ctools_include('export');
-  ctools_export_set_status('panels_template', $name, TRUE);
+  ctools_export_set_status('pure_panels', $name, TRUE);
   drupal_goto();
 }
 
 /**
  * Pass through to the panels content editor.
  */
-function panels_template_edit_content($panel_template) {
+function pure_panels_edit_content($panel_template) {
   if (!is_object($panel_template)) {
-    $panel_template = panels_template_load($panel_template);
+    $panel_template = pure_panels_load($panel_template);
   }
   ctools_include('context');
   // Collect a list of contexts required by the arguments on this page.
   $panel_template->display->context = $contexts = ctools_context_load_contexts($panel_template);
 
   panels_load_include('common');
-  $content_types = panels_common_get_allowed_types('panels_template', $contexts);
+  $content_types = panels_common_get_allowed_types('pure_panels', $contexts);
 
   $output = panels_edit($panel_template->display, NULL, $content_types);
   if (is_object($output)) {
     $panel_template->display = $output;
     $panel_template->did = $output->did;
-    panels_template_save($panel_template);
+    pure_panels_save($panel_template);
     drupal_goto("admin/build/panel-template/{$panel_template->name}/edit-content");
   }
   // Print this with theme('page') so that blocks are disabled while editing a display.
@@ -670,16 +668,16 @@ function panels_template_edit_content($panel_template) {
 /**
  * Pass through to the panels layout editor.
  */
-function panels_template_edit_layout($panel_template) {
+function pure_panels_edit_layout($panel_template) {
   if (!is_object($panel_template)) {
-    $panel_template = panels_template_load($panel_template);
+    $panel_template = pure_panels_load($panel_template);
   }
 
-  $output = panels_edit_layout($panel_template->display, t('Save'), NULL, 'panels_template');
+  $output = panels_edit_layout($panel_template->display, t('Save'), NULL, 'pure_panels');
   if (is_object($output)) {
     $panel_template->display = $output;
     $panel_template->did = $output->did;
-    panels_template_save($panel_template);
+    pure_panels_save($panel_template);
     drupal_goto("admin/build/panel-template/{$panel_template->name}/edit-layout");
   }
 

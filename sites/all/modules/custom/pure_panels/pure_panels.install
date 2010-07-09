@@ -4,12 +4,12 @@
 /**
  * Implementation of hook_schema().
  */
-function panels_template_schema() {
+function pure_panels_schema() {
   // This should always point to our 'current' schema. This makes it relatively easy
   // to keep a record of schema as we make changes to it.
   $schema = array();
-  $schema += panels_template_schema_1();
-  $schema += panels_template_schema_2();
+  $schema += pure_panels_schema_1();
+  $schema += pure_panels_schema_2();
 
   return $schema;
 }
@@ -17,16 +17,16 @@ function panels_template_schema() {
 /**
  * Schema version 1 for Panels in D6.
  */
-function panels_template_schema_1() {
+function pure_panels_schema_1() {
   $schema = array();
 
-  $schema['panels_template'] = array(
+  $schema['pure_panels'] = array(
     'export' => array(
       'identifier' => 'template',
-      'export callback' => 'panels_template_export',
+      'export callback' => 'pure_panels_export',
       'api' => array(
-        'owner' => 'panels_template',
-        'api' => 'panels_template_default',
+        'owner' => 'pure_panels',
+        'api' => 'pure_panels_default',
         'minimum_version' => 1,
         'current_version' => 1,
       ),
@@ -85,10 +85,10 @@ function panels_template_schema_1() {
   return $schema;
 }
 
-function panels_template_schema_2() {
+function pure_panels_schema_2() {
   $schema = array();
 
-  $schema['panels_template_node'] = array(
+  $schema['pure_panels_node'] = array(
     'fields' => array(
       'nid' => array(
         'type' => 'int',
@@ -120,15 +120,15 @@ function panels_template_schema_2() {
 /**
  * Implementation of hook_install().
  */
-function panels_template_install() {
-  drupal_install_schema('panels_template');
+function pure_panels_install() {
+  drupal_install_schema('pure_panels');
 }
 
 /**
  * Implementation of hook_uninstall().
  */
-function panels_template_uninstall() {
-  $result = db_query("SELECT * FROM {panels_template} ORDER BY title");
+function pure_panels_uninstall() {
+  $result = db_query("SELECT * FROM {pure_panels} ORDER BY title");
   $panels_exists = db_table_exists('panels_display');
   while ($panel_template = db_fetch_object($result)) {
     // Delete all associated displays.
@@ -141,14 +141,14 @@ function panels_template_uninstall() {
   }
 
   // Finally, delete all template panels.
-  drupal_uninstall_schema('panels_template');
+  drupal_uninstall_schema('pure_panels');
 }
 
-function panels_template_update_6200() {
+function pure_panels_update_6200() {
   $ret = array();
 
-  $schema = panels_template_schema_2();
-  db_create_table($ret, 'panels_template_node', $schema['panels_template_node']);
+  $schema = pure_panels_schema_2();
+  db_create_table($ret, 'pure_panels_node', $schema['pure_panels_node']);
 
   return $ret;
 }

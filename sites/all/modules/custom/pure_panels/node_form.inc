@@ -1,20 +1,20 @@
 <?php
 
-function panels_template_post_form_alter(&$form, &$form_state) {
+function pure_panels_post_form_alter(&$form, &$form_state) {
   if ($form['#id'] == 'node-form') {
-    panels_template_template_dropdowns($form, $form_state);
+    pure_panels_template_dropdowns($form, $form_state);
   }
 }
 
-function panels_template_template_dropdowns(&$form, &$form_state) {
+function pure_panels_template_dropdowns(&$form, &$form_state) {
   $node = $form['#node'];
 
-  $types = panels_template_get_applicable_types($node);
+  $types = pure_panels_get_applicable_types($node);
   if (!$types) {
     return;
   }
 
-  $template_types = panels_template_get_template_types();
+  $template_types = pure_panels_get_template_types();
 
   $templates = array(
     '#type' => 'fieldset',
@@ -26,15 +26,15 @@ function panels_template_template_dropdowns(&$form, &$form_state) {
       '' => t('None'),
     );
     $template_type = $template_types[$name];
-    $options += panels_template_panels_template_list_type($name);
-    $templates['panels_template_' . $name] = array(
+    $options += pure_panels_pure_panels_list_type($name);
+    $templates['pure_panels_' . $name] = array(
       '#type' => 'select',
       '#title' => $template_type['label'],
       '#options' => $options,
-      '#default_value' => $node->panels_template[$name] ? $node->panels_template[$name] : '',
+      '#default_value' => $node->pure_panels[$name] ? $node->pure_panels[$name] : '',
     );
   }
-  drupal_alter('panels_template_template_dropdowns', $templates);
+  drupal_alter('pure_panels_template_dropdowns', $templates);
   $form['panel_templates'] = $templates;
 }
 
@@ -42,24 +42,24 @@ function panels_template_template_dropdowns(&$form, &$form_state) {
  * Defined what template_types are available for each content type
  * For now, default to all with an alter
  */
-function panels_template_get_applicable_types(&$node) {
+function pure_panels_get_applicable_types(&$node) {
   static $enabled = array();
 
   if ($enabled) {
     return $enabled[$node->type];
   }
 
-  $cache = cache_get('panels_template_applicable_types')->data;
+  $cache = cache_get('pure_panels_applicable_types')->data;
   if ($cache && $cache->data) {
     $enabled = $cache;
     return $enabled[$node->type];
   } 
 
-  // hook_panels_template_applicable_types().
+  // hook_pure_panels_applicable_types().
   // Define a nested set of panel templates grouped by the content types they
   // can be used with.
   //
-  // function mymodule_panels_template_applicable_types() {
+  // function mymodule_pure_panels_applicable_types() {
   //   $types = array(
   //     'article' => array(
   //       'article_default',
@@ -76,32 +76,32 @@ function panels_template_get_applicable_types(&$node) {
   //   );
   //   return $types;
   // }
-  foreach (module_implements('panels_template_applicable_types') as $module) {
-    $func = $module . '_panels_template_applicable_types';
+  foreach (module_implements('pure_panels_applicable_types') as $module) {
+    $func = $module . '_pure_panels_applicable_types';
     $ret = $func();
     if (is_array($ret)) {
       $enabled = array_merge_recursive($enabled, $ret);
     }
   }
 
-  // hook_panels_template_applicable_types_alter($types).
+  // hook_pure_panels_applicable_types_alter($types).
   // Override the default application types.
-  drupal_alter('panels_template_applicable_types', $enabled);
+  drupal_alter('pure_panels_applicable_types', $enabled);
 
-  cache_set('panels_template_applicable_types', $enabled);
+  cache_set('pure_panels_applicable_types', $enabled);
 
   return $enabled[$node->type];
 }
 
-function panels_template_nodeapi(&$node, $op, $a3, $a4) {
+function pure_panels_nodeapi(&$node, $op, $a3, $a4) {
   switch ($op) {
     case 'update':
     case 'delete':
     case 'insert':
-      panels_template_node_write($node);
+      pure_panels_node_write($node);
       break;
     case 'load':
-      return panels_template_node_load($node); 
+      return pure_panels_node_load($node); 
       break;
   }
 }
@@ -109,8 +109,8 @@ function panels_template_nodeapi(&$node, $op, $a3, $a4) {
 /**
  * Write the panels template
  */
-function panels_template_node_write(&$node) {
-  $types = panels_template_get_applicable_types($node);
+function pure_panels_node_write(&$node) {
+  $types = pure_panels_get_applicable_types($node);
   if (!$types) {
     return;
   }
@@ -119,35 +119,35 @@ function panels_template_node_write(&$node) {
     $obj->nid = $node->nid;
     $obj->vid = $node->vid;
     $obj->template_type = $name;
-    $obj->name = $node->{'panels_template_' . $name};
+    $obj->name = $node->{'pure_panels_' . $name};
 
-    drupal_write_record('panels_template_node', $obj, array('vid', 'template_type'));
+    drupal_write_record('pure_panels_node', $obj, array('vid', 'template_type'));
     // Only insert new one for selected names
     if (!db_affected_rows() && $obj->name) {
-      drupal_write_record('panels_template_node', $obj);
+      drupal_write_record('pure_panels_node', $obj);
     }
   }
 }
 
 /**
- * Attach the panels_template additions
+ * Attach the pure_panels additions
  */
-function panels_template_node_load(&$node) {
+function pure_panels_node_load(&$node) {
   $ret = array();
-  $types = panels_template_get_applicable_types($node);
+  $types = pure_panels_get_applicable_types($node);
   if (!$types) {
     return;
   }
-  $templates = panels_template_node_load_templates($node);
-  $ret['panels_template'] = $templates;
+  $templates = pure_panels_node_load_templates($node);
+  $ret['pure_panels'] = $templates;
   return $ret;
 }
 
 /**
  * Grab from database
  */
-function panels_template_node_load_templates(&$node) {
-  $sql = "SELECT template_type, name FROM panels_template_node WHERE vid = %d";
+function pure_panels_node_load_templates(&$node) {
+  $sql = "SELECT template_type, name FROM pure_panels_node WHERE vid = %d";
   $results = db_query($sql, $node->vid);
   $templates = array();
   while ($row = db_fetch_object($results)) {
