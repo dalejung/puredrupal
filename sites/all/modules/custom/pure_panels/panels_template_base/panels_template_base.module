@@ -1,0 +1,74 @@
+<?php
+/**
+ * Implementation of hook_ctools_plugin_directory() to let the system know
+ * we implement task and task_handler plugins.
+ */
+
+function panels_template_base_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'page_manager' || $module == 'panels' || $module == 'ctools') {
+    return 'plugins/' . $plugin;
+  }
+}
+
+function panels_template_base_panels_template_template_types() {
+  $options = array(
+    'article' => array(
+      'label' => t('Article Templates'),
+      'parent' => 'node_view',
+      'context_enabled' => FALSE,
+    ),
+    'homepage' => array(
+      'label' => t('Homepage Templates'),
+      'parent' => 'node_view',
+    ),
+    'site_template' => array(
+      'label' => t('Site Templates'),
+      'parent' => 'site_template',
+    ),
+    'right_column' => array(
+      'label' => t('Right Column')
+    ),
+    'left_column' => array( 
+      'label' => t('Left Column')
+    ),
+  );
+  return $options;
+}
+
+function panels_template_base_panels_template_applicable_types() {
+  $enabled = array();
+  $enabled['homepage'] = array();
+  $enabled['homepage'][] = 'right_column';
+  $enabled['homepage'][] = 'homepage';
+  $enabled['homepage'][] = 'site_template';
+  $enabled['article'] = array();
+  $enabled['article'][] = 'right_column';
+  $enabled['article'][] = 'article';
+  $enabled['article'][] = 'site_template';
+  return $enabled;
+}
+
+function panels_template_base_block($op = 'list', $delta = 0, $edit = array()) {
+  if ($op == 'list') {
+    $blocks['right_column'] = array('info' => t('Panels Template: Right Column'));
+    $blocks['left_column'] = array('info' => t('Panels Template: Left Column'));
+    return $blocks;
+  } 
+  elseif ($op == 'view') {
+    switch ($delta) {
+      case 'right_column':
+        $block = array(
+          'subject' => '<none>',
+          'content' => panels_template_region_handler('right_column'),
+        );
+        break;
+      case 'left_column':
+        $block = array(
+          'subject' => '<none>',
+          'content' => panels_template_region_handler('left_column'),
+        );
+        break;
+    }
+    return $block;
+  }
+}

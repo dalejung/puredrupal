@@ -1,0 +1,375 @@
+<?php
+// $Id: panels_template.module,v 1.5.2.17 2009/10/21 20:51:49 merlinofchaos Exp $
+
+/**
+ * @file panels_template.module
+ *
+ * This module provides template panels which are basically panels that can be
+ * used within blocks or other panels.
+ */
+
+module_load_include('inc', 'panels_template', 'contexts');
+module_load_include('inc', 'panels_template', 'node_form');
+
+/**
+ * Implementation of hook_perm().
+ */
+function panels_template_perm() {
+  return array('create template panels', 'adtemplatester template panels');
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function panels_template_menu() {
+  // Safety: go away if CTools is not at an appropriate version.
+  if (!defined('PANELS_REQUIRED_CTOOLS_API') || !module_invoke('ctools', 'api_version', PANELS_REQUIRED_CTOOLS_API)) {
+    return array();
+  }
+  require_once drupal_get_path('module', 'panels_template') . '/panels_template.admin.inc';
+  return _panels_template_menu();
+}
+
+/**
+ * Implementation of hook_theme_registry_alter().
+ */
+function panels_template_theme_registry_alter(&$reg) {
+  $layouts = panels_get_layouts();
+  // Add a preprocess function for each panels layout
+  $path = path_to_theme();
+  $panel_layouts = $path . '/panel_layouts';
+  foreach ($layouts as $layout) {
+    $reg[$layout['theme']]['preprocess functions'][] = 'panels_template_preprocess_panels_layout';
+    $reg[$layout['theme']]['theme paths'][] = $path;
+    $reg[$layout['theme']]['theme paths'][] = $panel_layouts;
+  }
+
+  $reg['panels_template_panel_layout']['theme paths'][] = $path; 
+  $reg['panels_template_panel_layout']['theme paths'][] = $panel_layouts; 
+}
+
+/*
+  If the display theme was set, create the template suggestion
+*/
+function panels_template_preprocess_panels_layout(&$vars) {
+  $display = $vars['display'];
+  $display_theme = $display->panel_settings['style_settings']['default']['display_theme'];
+  if ($display_theme) {
+    $vars['template_files'][] = $display_theme;
+  }
+  $panes_content = $vars['content']['panes_content'];
+  foreach ((array) $panes_content as $key => $pane) {
+    $vars[$key] = $pane->content;
+  }
+}
+
+/**
+ * Statically store all used IDs to ensure all template panels get a unique id.
+ */
+function panels_template_get_id($name) {
+  static $id_cache = array();
+
+  $id = 'template-panel-' . $name;
+  if (!empty($id_cache[$name])) {
+    $id .= "-" . $id_cache[$name]++;
+  }
+  else {
+    $id_cache[$name] = 1;
+  }
+
+  return $id;
+}
+
+// ---------------------------------------------------------------------------
+// Database functions.
+
+/**
+ * Create a new page with defaults appropriately set from schema.
+ */
+function panels_template_new() {
+  ctools_include('export');
+  return ctools_export_new_object('panels_template');
+}
+
+/**
+ * Load a single template panel.
+ */
+function panels_template_load($name) {
+  ctools_include('export');
+  $result = ctools_export_load_object('panels_template', 'names', array($name));
+  if (isset($result[$name])) {
+    if (empty($result[$name]->display)) {
+      $result[$name]->display = panels_load_display($result[$name]->did);
+    }
+    /**
+     * TODO: This is ugly as hell. Not sure if this is the best place to put this
+     *
+     */
+    // Always default first context to the Node being viewed
+    $result[$name]->contexts[0] = array(
+      'name' => 'panels_template_node',
+      'id' => 1,
+      'identifier' => t('Node being viewed'),
+      'keyword' => 'node',
+    );
+    // Panel Everywhere Support
+    $args = array(
+        array(
+          'keyword' => 'url',
+          'identifier' => t('URL'),
+          'id' => 1,
+          'name' => 'string',
+          'settings' => array(),
+        ),
+        array(
+          'keyword' => 'content',
+          'identifier' => t('Page content'),
+          'id' => 1,
+          'name' => 'page_content',
+          'settings' => array(),
+        ),
+        array(
+          'keyword' => 'page',
+          'identifier' => t('Managed page'),
+          'id' => 1,
+          'name' => 'managed_page',
+          'settings' => array(),
+        ),
+      );
+    $result[$name]->arguments = $args;
+
+    return $result[$name];
+  }
+}
+
+/**
+ * Load all template panels.
+ */
+function panels_template_load_all($reset=FALSE) {
+  static $templates;
+  // If this page was loaded before and data was found, just return it.
+  if ($templates) {
+    return $templates;
+  }
+  // If there's a cached version of the template_panels available, use it.
+  if (!$reset && $cache = cache_get('panels_template_load_all')) {
+    $templates = $cache->data;
+    return $templates;
+  }
+
+  ctools_include('export');
+  $templates = ctools_export_load_object('panels_template');
+  $dids = array();
+  foreach ($templates as $template) {
+    if (!empty($template->did)) {
+      $dids[$template->did] = $template->name;
+    }
+  }
+
+  $displays = panels_load_displays(array_keys($dids));
+  foreach ($displays as $did => $display) {
+    $templates[$dids[$did]]->display = $display;
+  }
+
+  // Cache the template panels for later.
+  cache_set('panels_template_load_all', $templates);
+
+  return $templates;
+}
+
+/**
+ * Write a template panel to the database.
+ */
+function panels_template_save(&$template) {
+  if (!empty($template->display)) {
+    $display = panels_save_display($template->display);
+    $template->did = $display->did;
+  }
+
+  $update = (isset($template->pid) && $template->pid != 'new') ? array('pid') : array();
+  drupal_write_record('panels_template', $template, $update);
+  cache_clear_all('panels_template_load_all', 'cache');
+
+  return $template;
+}
+
+/**
+ * Remove a template panel.
+ */
+function panels_template_delete($template) {
+  db_query("DELETE FROM {panels_template} WHERE name = '%s'", $template->name);
+  return panels_delete_display($template->did);
+}
+
+/**
+ * Export a template panel.
+ */
+function panels_template_export($template, $indent = '') {
+  ctools_include('export');
+  $output = ctools_export_object('panels_template', $template, $indent);
+  // Export the primary display
+  $display = !empty($template->display) ? $template->display : panels_load_display($template->did);
+  $output .= panels_export_display($display, $indent);
+  $output .= $indent . '$template->display = $display' . ";\n";
+  return $output;
+}
+
+/**
+ * Menu callback to check to see if a template panel is valid as part
+ * of a path, and if it is, return the template.
+ */
+function panels_template_admin_load($name) {
+  $template = panels_template_load($name);
+  if ($template && empty($template->disabled)) {
+    return $template;
+  }
+}
+
+/**
+ * Implementation of hook_ctools_plugin_directory() to let the system know
+ * we implement task and task_handler plugins.
+ */
+function panels_template_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'page_manager' || $module == 'panels' || $module == 'ctools') {
+    return 'plugins/' . $plugin;
+  }
+}
+
+function panels_template_panels_template_list($template_type = NULL) {
+  $all_panels = panels_template_load_all();
+  $list = array();
+
+  foreach ($all_panels as $name => $panel) {
+    $list[$name] = check_plain($name) . ' (' . check_plain($panel->title) . ')';
+  }
+  return $list;
+}
+
+function panels_template_panels_template_list_type($template_type) {
+  $all_panels = panels_template_load_all();
+  $list = array();
+
+  foreach ($all_panels as $name => $panel) {
+    if ($template_type == $panel->template_type) {
+      $list[$name] = check_plain($name) . ' (' . check_plain($panel->title) . ')';
+    }
+  }
+  return $list;
+}
+
+function panels_template_get_template_types() {
+  $types = array();
+
+  foreach (module_implements('panels_template_template_types') as $module) {
+    $func = $module . '_panels_template_template_types';
+    $ret = $func();
+    if (is_array($ret)) {
+      $types = array_merge_recursive($types, $ret);
+    }
+  }
+
+  drupal_alter('panels_template_template_types', $types);
+
+  return $types;
+}
+
+/*
+  Implementation of panel_task_override
+  Provided by panel_template.inc panel task
+*/
+function panels_template_panel_task_override(&$handler,$display) {
+  if ($handler->task == 'node_view') {
+    return panels_template_node_view_task_override($handler, $display);
+  }
+  if ($handler->task == 'site_template') {
+    return panels_template_site_template_task_override($handler, $display);
+  }
+}
+
+function panels_template_task_cascade($type, &$node=NULL) {
+  // Node is final say
+  $template_types = panels_template_get_template_types();
+  if($node) {
+    foreach ((array) $node->panels_template as $key=>$template) {
+      if ($template_types[$key] && $template_types[$key]['parent'] == $type) {
+        return $override = $node->panels_template[$key];
+      }
+    }
+  }
+
+  if (!function_exists('context_get_plugin')) { 
+    return;
+  }
+
+  // check context
+  foreach($template_types as $type => $template) {
+    if($template['parent'] != $type) {
+      continue;;
+    }
+
+    $plugin = context_get_plugin('reaction','panels_template');
+    $override = $plugin->get_template($type);
+    if($override) {
+      return $override;
+    }
+  }
+}
+
+function panels_template_node_view_task_override(&$handler,$display) {
+
+  $node = $display->context['argument_nid_1']->data;
+
+  $name = panels_template_task_cascade('node_view', $node);  
+
+  $templates = panels_template_load_all();
+  $template = $templates[$name];
+
+  if ($template) {
+    $display = $template->display;
+    $context = panels_template_get_contexts($template);
+    $display->context = $context;
+    return $display;
+  }
+}
+
+function panels_template_site_template_task_override(&$handler,$display) {
+
+  $node = $display->context['context_panels_template_node_1']->data;
+  $args = $display->args;
+  $content = $args[1]->content;
+
+  $name = panels_template_task_cascade('site_template', $node);  
+
+  $templates = panels_template_load_all();
+  $template = $templates[$name];
+
+  if ($template) {
+    $display = $template->display;
+    $task = page_manager_get_task('site_template');
+    $page = page_manager_get_current_page();
+    $contexts = ctools_context_handler_get_task_contexts($task, '', array($_GET['q'], $content, $page));
+    $display->context = $contexts;
+    return $display;
+  }
+}
+
+
+function panels_template_grab_display($name) {
+  $templates = panels_template_load_all();
+  $template = $templates[$name];
+
+  if ($template) {
+    // By this point the display should ahve been loaded
+    $display = $template->display ? $template->display : panels_load_display($template->did);
+    $context = panels_template_get_contexts($template);
+    $display->context = $context;
+    return $display;
+  }
+}
+
+
+function panels_template_get_contexts(&$template) {
+  // include context
+  ctools_include('context');  
+  return ctools_context_load_contexts($template);
+}
