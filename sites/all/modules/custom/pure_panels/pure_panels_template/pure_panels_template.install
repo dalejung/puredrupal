@@ -20,7 +20,7 @@ function pure_panels_template_schema_1() {
 
   $schema['pure_panels_template'] = array(
     'export' => array(
-      'identifier' => 'panels_template',
+      'identifier' => 'template',
       'export callback' => 'pure_panels_template_export',
       'api' => array(
         'owner' => 'pure_panels_template',

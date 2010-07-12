@@ -68,6 +68,43 @@ function pure_panels_template_load($name) {
     if (empty($result[$name]->display)) {
       $result[$name]->display = panels_load_display($result[$name]->did);
     }
+    /**
+     * TODO: This is ugly as hell. Not sure if this is the best place to put this
+     *
+     */
+    // Always default first context to the Node being viewed
+    $result[$name]->contexts[0] = array(
+      'name' => 'pure_panels_node',
+      'id' => 1,
+      'identifier' => t('Node being viewed'),
+      'keyword' => 'node',
+    );
+    // Panel Everywhere Support
+    $args = array(
+      array(
+        'keyword' => 'url',
+        'identifier' => t('URL'),
+        'id' => 1,
+        'name' => 'string',
+        'settings' => array(),
+      ),
+      array(
+        'keyword' => 'content',
+        'identifier' => t('Page content'),
+        'id' => 1,
+        'name' => 'page_content',
+        'settings' => array(),
+      ),
+      array(
+        'keyword' => 'page',
+        'identifier' => t('Managed page'),
+        'id' => 1,
+        'name' => 'managed_page',
+        'settings' => array(),
+      ),
+    );
+    $result[$name]->arguments = $args;
+
     return $result[$name];
   }
 }
@@ -75,60 +112,83 @@ function pure_panels_template_load($name) {
 /**
  * Load all mini panels.
  */
-function pure_panels_template_load_all() {
+function pure_panels_template_load_all($reset=FALSE) {
+  static $templates;
+
+  // static cache
+  if($templates && !$reset) {
+    return $templates;
+  }
+
+  // If there's a cached version of the template_panels available, use it.
+  if (!$reset && $cache = app_cache_get('pure_panels_template_load_all')) {
+    $templates = $cache->data;
+    return $templates;
+  }
+
   ctools_include('export');
-  $minis = ctools_export_load_object('pure_panels_template');
+  $templates = ctools_export_load_object('pure_panels_template');
   $dids = array();
-  foreach ($minis as $mini) {
-    if (!empty($mini->did)) {
-      $dids[$mini->did] = $mini->name;
+  foreach ($templates as $template) {
+    if (!empty($template->did)) {
+      $dids[$template->did] = $template->name;
     }
   }
 
   $displays = panels_load_displays(array_keys($dids));
   foreach ($displays as $did => $display) {
-    $minis[$dids[$did]]->display = $display;
+    $templates[$dids[$did]]->display = $display;
   }
 
-  return $minis;
+  // Cache the template panels for later.
+  app_cache_set('pure_panels_load_all', $templates, 'pure_panels_template');
+
+  return $templates;
 }
 
 /**
- * Write a mini panel to the database.
+ * Write a template panel to the database.
  */
-function pure_panels_template_save(&$mini) {
-  if (!empty($mini->display)) {
-    $display = panels_save_display($mini->display);
-    $mini->did = $display->did;
+function pure_panels_template_save(&$template) {
+  if (!empty($template->display)) {
+    $display = panels_save_display($template->display);
+    $template->did = $display->did;
   }
 
-  $update = (isset($mini->pid) && $mini->pid != 'new') ? array('pid') : array();
-  drupal_write_record('pure_panels_template', $mini, $update);
+  $update = (isset($template->pid) && $template->pid != 'new') ? array('pid') : array();
+  drupal_write_record('pure_panels_template', $template, $update);
 
-  return $mini;
+  // Clear the app cache for pure_panels
+  app_cache_clear('pure_panels_load_all');
+
+  return $template;
 }
 
 /**
  * Remove a mini panel.
  */
-function pure_panels_template_delete($mini) {
-  db_query("DELETE FROM {pure_panels_template} WHERE name = '%s'", $mini->name);
-  if ($mini->type != t('Overridden')) {
-    db_query("DELETE FROM {blocks} WHERE module = 'pure_panels_template' AND delta = '%s'", $mini->name);
+function pure_panels_template_delete($template) {
+  db_query("DELETE FROM {pure_panels_template} WHERE name = '%s'", $template->name);
+  if ($template->type != t('Overridden')) {
+    db_query("DELETE FROM {blocks} WHERE module = 'pure_panels_template' AND delta = '%s'", $template->name);
   }
-  return panels_delete_display($mini->did);
+
+  // Clear the app cache for pure_panels
+  app_cache_clear('pure_panels_load_all');
+
+  return panels_delete_display($template->did);
 }
 
 /**
  * Export a mini panel.
  */
-function pure_panels_template_export($mini, $indent = '') {
+function pure_panels_template_export($template, $indent = '') {
   ctools_include('export');
-  $output = ctools_export_object('pure_panels_template', $mini, $indent);
+  $output = ctools_export_object('pure_panels_template', $template, $indent);
   // Export the primary display
-  $display = !empty($mini->display) ? $mini->display : panels_load_display($mini->did);
+  $display = !empty($template->display) ? $template->display : panels_load_display($template->did);
   $output .= panels_export_display($display, $indent);
-  $output .= $indent . '$mini->display = $display' . ";\n";
+  $output .= $indent . '$template->display = $display' . ";\n";
   return $output;
 }
 
@@ -140,13 +200,13 @@ function pure_panels_template_ctools_block_info($module, $delta, &$info) {
 }
 
 /**
- * Menu callback to check to see if a mini panel is valid as part
- * of a path, and if it is, return the mini.
+ * Menu callback to check to see if a template panel is valid as part
+ * of a path, and if it is, return the template.
  */
 function pure_panels_template_admin_load($name) {
-  $mini = pure_panels_template_load($name);
-  if ($mini && empty($mini->disabled)) {
-    return $mini;
+  $template = pure_panels_template_load($name);
+  if ($template && empty($template->disabled)) {
+    return $template;
   }
 }
 
