@@ -10,7 +10,7 @@ function pure_panels_base_ctools_plugin_directory($module, $plugin) {
   }
 }
 
-function pure_panels_base_panels_template_template_types() {
+function pure_panels_base_pure_panels_template_types() {
   $options = array(
     'article' => array(
       'label' => t('Article Templates'),
@@ -35,7 +35,7 @@ function pure_panels_base_panels_template_template_types() {
   return $options;
 }
 
-function pure_panels_base_panels_template_applicable_types() {
+function pure_panels_base_pure_panels_applicable_types() {
   $enabled = array();
   $enabled['homepage'] = array();
   $enabled['homepage'][] = 'right_column';
