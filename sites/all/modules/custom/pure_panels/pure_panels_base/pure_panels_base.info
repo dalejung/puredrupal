@@ -1,5 +1,5 @@
 name = Panels Template Base
 description = Creates right/left column. Also supports article and homepage type
-package = "Panels"
+package = "Pure Panels"
 dependencies[] = panels_template
 core = 6.x
