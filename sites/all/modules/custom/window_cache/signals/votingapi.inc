@@ -1,4 +1,5 @@
 <?php
+// $Id$
 
 function window_cache_votingapi_update(&$vobj) {
 	wc_votingapi_signal($vobj);

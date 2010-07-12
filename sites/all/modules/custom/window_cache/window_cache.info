@@ -1,3 +1,5 @@
+; $Id$ 
+
 name = Window Cache 
 description = "Window Cache"
 core = 6.x

@@ -1,4 +1,6 @@
 <?php
+// $Id$
+
 /**
  * hook_comment 
  */

@@ -1,4 +1,5 @@
 <?php
+// $Id$
 
 function wc_log($window_key=NULL, $message=NULL) {
   static $log;

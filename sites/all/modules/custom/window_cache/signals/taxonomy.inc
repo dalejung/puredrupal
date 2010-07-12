@@ -1,4 +1,5 @@
 <?php
+// $Id$
 
 function wc_signal_node_taxonomy_signal(&$node, $prefix=null) {
   if (!isset($node->taxonomy)) {

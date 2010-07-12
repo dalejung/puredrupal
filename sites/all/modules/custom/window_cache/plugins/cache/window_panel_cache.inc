@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_simple_cache.module,v 1.1.2.7 2008/06/04 12:55:15 pancho Exp $
+// $Id$
 
 
 /**
