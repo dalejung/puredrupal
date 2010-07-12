@@ -2,19 +2,19 @@
 /**
  * Panels Template reactions
  */
-class panels_template_reaction extends context_reaction {
+class pure_panels_reaction extends context_reaction {
 
   function options_form($context) {
     $form = array();
 
-    $template_types = panels_template_get_template_types();
+    $template_types = pure_panels_get_template_types();
     foreach($template_types as $type => $template) {
       if ($template['context_enabled'] === FALSE) {
         continue;
       } 
       $options = array('' => t('N/A'));
       $options += array('none' => t('None'));
-      $options += panels_template_panels_template_list_type($type); 
+      $options += pure_panels_get_templates($type); 
       $form[$type] = array(
         '#type' => 'select',
         '#title' => $template['label'],

@@ -45,7 +45,10 @@ function pure_panels_preprocess_panels_layout(&$vars) {
   }
 }
 
-function pure_panels_pure_panels_list_type($template_type) {
+/**
+ * Return all templates of a certain template type
+ */
+function pure_panels_get_templates($template_type) {
   $all_panels = pure_panels_load_all();
   $list = array();
 
@@ -57,6 +60,9 @@ function pure_panels_pure_panels_list_type($template_type) {
   return $list;
 }
 
+/**
+ * Get all defined template types
+ */
 function pure_panels_get_template_types() {
   $types = array();
 

@@ -145,6 +145,7 @@ function pure_panels_template_list_page() {
     array('data' => t('Title'), 'field' => 'title'),
     array('data' => t('Name'), 'field' => 'name', 'sort' => 'asc'),
     array('data' => t('Type'), 'field' => 'type'),
+    array('data' => t('Template Type'), 'field' => 'template_type'),
     t('Layout'),
     t('Operations'),
   );
@@ -177,6 +178,8 @@ function pure_panels_template_list_page() {
     $item[] = check_plain($template->name);
     // this is safe as it's always programmatic
     $item[] = $template->type;
+
+    $item[] = $panel_template->template_type;
 
     if (empty($template->display)) {
       $template->display = $displays[$template->did];
@@ -360,6 +363,7 @@ function pure_panels_template_add_page($layout = NULL) {
   $template->did = 'new';
   $template->title = '';
   $template->name = '';
+  $template->template_type = '';
   $template->category = '';
 
   drupal_set_title(t('Add panel template'));
@@ -428,6 +432,20 @@ function pure_panels_template_edit_form(&$form_state, $template) {
     '#title' => t('Mini panel name'),
     '#maxlength' => 32,
     '#description' => t('A unique name used to identify this panel page internally. It must be only be alpha characters and underscores. No spaces, numbers or uppercase characters.'),
+  );
+
+  $template_types = pure_panels_get_template_types();
+  $options = array();
+  foreach ($template_types as $name => $type) {
+    $options[$name] = $type['label'];
+  }
+
+  $form['left']['settings']['template_type'] = array(
+    '#type' => 'select',
+    '#options' => $options,
+    '#default_value' => $panel_template->template_type,
+    '#title' => t('Template Type'),
+    '#description' => '',
   );
 
   $form['left']['settings']['category'] = array(
@@ -525,6 +543,7 @@ function pure_panels_template_edit_form_submit($form, &$form_state) {
 
   $template->title = $form_state['values']['title'];
   $template->name = $form_state['values']['name'];
+  $template->template_type = $form_state['values']['template_type'];
   $template->category = empty($form_state['values']['category']) ? '' : $form_state['values']['category'];
 
   if (isset ($template->pid) && $template->pid == 'new') {

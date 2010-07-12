@@ -26,7 +26,7 @@ function pure_panels_template_dropdowns(&$form, &$form_state) {
       '' => t('None'),
     );
     $template_type = $template_types[$name];
-    $options += pure_panels_pure_panels_list_type($name);
+    $options += pure_panels_get_templates($name);
     $templates['pure_panels_' . $name] = array(
       '#type' => 'select',
       '#title' => $template_type['label'],
