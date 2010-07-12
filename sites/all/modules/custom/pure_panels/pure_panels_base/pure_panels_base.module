@@ -4,13 +4,13 @@
  * we implement task and task_handler plugins.
  */
 
-function panels_template_base_ctools_plugin_directory($module, $plugin) {
+function pure_panels_base_ctools_plugin_directory($module, $plugin) {
   if ($module == 'page_manager' || $module == 'panels' || $module == 'ctools') {
     return 'plugins/' . $plugin;
   }
 }
 
-function panels_template_base_panels_template_template_types() {
+function pure_panels_base_panels_template_template_types() {
   $options = array(
     'article' => array(
       'label' => t('Article Templates'),
@@ -35,7 +35,7 @@ function panels_template_base_panels_template_template_types() {
   return $options;
 }
 
-function panels_template_base_panels_template_applicable_types() {
+function pure_panels_base_panels_template_applicable_types() {
   $enabled = array();
   $enabled['homepage'] = array();
   $enabled['homepage'][] = 'right_column';
@@ -48,10 +48,10 @@ function panels_template_base_panels_template_applicable_types() {
   return $enabled;
 }
 
-function panels_template_base_block($op = 'list', $delta = 0, $edit = array()) {
+function pure_panels_base_block($op = 'list', $delta = 0, $edit = array()) {
   if ($op == 'list') {
-    $blocks['right_column'] = array('info' => t('Panels Template: Right Column'));
-    $blocks['left_column'] = array('info' => t('Panels Template: Left Column'));
+    $blocks['right_column'] = array('info' => t('Pure Panels Template: Right Column'));
+    $blocks['left_column'] = array('info' => t('Pure Panels Template: Left Column'));
     return $blocks;
   } 
   elseif ($op == 'view') {
@@ -59,13 +59,13 @@ function panels_template_base_block($op = 'list', $delta = 0, $edit = array()) {
       case 'right_column':
         $block = array(
           'subject' => '<none>',
-          'content' => panels_template_region_handler('right_column'),
+          'content' => pure_panels_region_handler('right_column'),
         );
         break;
       case 'left_column':
         $block = array(
           'subject' => '<none>',
-          'content' => panels_template_region_handler('left_column'),
+          'content' => pure_panels_region_handler('left_column'),
         );
         break;
     }
