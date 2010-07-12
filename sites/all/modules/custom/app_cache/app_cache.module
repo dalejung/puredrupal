@@ -1,0 +1,17 @@
+<?php
+
+function app_cache_get($cid) {
+  $cache = cache_get($cid);
+  return $cache;
+}
+
+function app_cache_set($cid, $data, $category) {
+  cache_set($cid, $data);
+}
+
+function app_cache_clear($cid, $category=NULL) {
+  if(!$category) {
+    cache_clear_all($cid, 'cache');
+  }
+  cache_set($cid, $data);
+}

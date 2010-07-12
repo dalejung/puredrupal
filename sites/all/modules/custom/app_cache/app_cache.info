@@ -1,0 +1,4 @@
+name = App Cache 
+description = "App Cache"
+core = 6.x
+package = Pure
