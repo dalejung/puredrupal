@@ -1,68 +1,57 @@
 <?php
-// $Id: panels_mini.inc,v 1.1.2.5 2010/05/17 19:27:01 sdboyer Exp $
-
-/**
- * @file
- * Contains the content type plugin for a mini panel. While this does not
- * need to be broken out into a .inc file, it's convenient that we do so
- * that we don't load code unneccessarily. Plus it demonstrates plugins
- * in modules other than Panels itself.
- * 
- */
-
 /**
  * Specially named hook. for .inc file. This looks a little silly due to the
  * redundancy, but that's really just because the content type shares a
  * name with the module.
  */
-function panels_mini_panels_mini_ctools_content_types() {
+function pure_panels_template_pure_panels_template_ctools_content_types() {
   return array(
-    'title' => t('Mini panels'),
-    'content type' => 'panels_mini_panels_mini_content_type_content_type',
+    'title' => t('Panel templates'),
+    'content type' => 'pure_panels_template_pure_panels_template_content_type_content_type',
   );
 }
 
 /**
- * Return each available mini panel available as a subtype.
+ * Return each available panel template available as a subtype.
  */
-function panels_mini_panels_mini_content_type_content_type($subtype_id, $plugin) {
-  $mini = panels_mini_load($subtype_id);
-  return _panels_mini_panels_mini_content_type_content_type($mini);
+function pure_panels_template_pure_panels_template_content_type_content_type($subtype_id, $plugin) {
+  $template = pure_panels_template_load($subtype_id);
+  return _pure_panels_template_pure_panels_template_content_type_content_type($template);
 }
 
 /**
- * Return each available mini panel available as a subtype.
+ * Return each available panel template available as a subtype.
  */
-function panels_mini_panels_mini_content_type_content_types($plugin) {
+function pure_panels_template_pure_panels_template_content_type_content_types($plugin) {
   $types = array();
-  foreach (panels_mini_load_all() as $mini) {
-    $type = _panels_mini_panels_mini_content_type_content_type($mini);
+  foreach (pure_panels_template_load_all() as $template) {
+    $type = _pure_panels_template_pure_panels_template_content_type_content_type($template);
     if ($type) {
-      $types[$mini->name] = $type;
+      $types[$template->name] = $type;
     }
   }
   return $types;
 }
 
 /**
- * Return an info array describing a single mini panel.
+ * Return an info array describing a single panel template.
  */
-function _panels_mini_panels_mini_content_type_content_type($mini) {
-  if (!empty($mini->disabled)) {
+function _pure_panels_template_pure_panels_template_content_type_content_type($template) {
+  if (!empty($template->disabled)) {
     return;
   }
 
-  $title = filter_xss_admin($mini->title);
+  $title = filter_xss_admin($template->title);
   $type = array(
     'title' => $title,
-    // For now mini panels will just use the contrib block icon.
-    'icon' => 'icon_mini_panel.png',
+    // For now panel templates will just use the contrib block icon.
+    'icon' => 'icon_panel_template.png',
     'description' => $title,
-    'category' => !empty($mini->category) ? $mini->category : t('Mini panel'),
+    'category' => !empty($template->category) ? $template->category : t('Mini panel'),
   );
-  if (!empty($mini->requiredcontexts)) {
+  if (!empty($template->requiredcontexts)) {
     $type['required context'] = array();
-    foreach ($mini->requiredcontexts as $context) {
+    foreach ($template->requiredcontexts as $context) {
       $info = ctools_get_context($context['name']);
       // TODO: allow an optional setting
       $type['required context'][] = new ctools_context_required($context['identifier'], $info['context name']);
@@ -72,62 +61,62 @@ function _panels_mini_panels_mini_content_type_content_type($mini) {
 }
 
 /**
- * Render a mini panel called from a panels display.
+ * Render a panel template called from a panels display.
  */
-function panels_mini_panels_mini_content_type_render($subtype, $conf, $panel_args, &$contexts) {
+function pure_panels_template_pure_panels_template_content_type_render($subtype, $conf, $panel_args, &$contexts) {
   static $viewing = array();
-  $mini = panels_mini_load($subtype);
-  if (!$mini) {
+  $template = pure_panels_template_load($subtype);
+  if (!$template) {
     return FALSE;
   }
-  if (!empty($viewing[$mini->name])) {
+  if (!empty($viewing[$template->name])) {
     return FALSE;
   }
 
   // Load up any contexts we might be using.
-  $context = ctools_context_match_required_contexts($mini->requiredcontexts, $contexts);
-  $mini->context = $mini->display->context = ctools_context_load_contexts($mini, FALSE, $context);
+  $context = ctools_context_match_required_contexts($template->requiredcontexts, $contexts);
+  $template->context = $template->display->context = ctools_context_load_contexts($template, FALSE, $context);
 
-  if (empty($mini) || !empty($mini->disabled)) {
+  if (empty($template) || !empty($template->disabled)) {
     return;
   }
-  $viewing[$mini->name] = TRUE;
+  $viewing[$template->name] = TRUE;
 
-  $mini->display->args = $panel_args;
-  $mini->display->css_id = panels_mini_get_id($subtype);
-  $mini->display->owner = $mini;
-  // unique ID of this mini.
-  $mini->display->owner->id = $mini->name;
+  $template->display->args = $panel_args;
+  $template->display->css_id = pure_panels_template_get_id($subtype);
+  $template->display->owner = $template;
+  // unique ID of this template.
+  $template->display->owner->id = $template->name;
 
   $block = new stdClass();
-  $block->module  = 'panels_mini';
+  $block->module  = 'pure_panels_template';
   $block->delta   = $subtype;
-  $block->title = filter_xss_admin($mini->title);
-  $block->content = panels_render_display($mini->display);
+  $block->title = filter_xss_admin($template->title);
+  $block->content = panels_render_display($template->display);
 
-  unset($viewing[$mini->name]);
+  unset($viewing[$template->name]);
   return $block;
 }
 
 /**
- * Edit form for the mini panel content type.
+ * Edit form for the panel template content type.
  */
-function panels_mini_panels_mini_content_type_edit_form(&$form, &$form_state) {
+function pure_panels_template_pure_panels_template_content_type_edit_form(&$form, &$form_state) {
   // Empty form to ensure we have the override title + context gadgets.
 }
 
 /**
- * Provide the administrative title of a mini panel.
+ * Provide the administrative title of a panel template.
  */
-function panels_mini_panels_mini_content_type_admin_title($subtype, $conf) {
-  $mini = panels_mini_load($subtype);
-  if (!$mini) {
-    return t('Deleted/missing mini panel @name', array('@name' => $subtype));
+function pure_panels_template_pure_panels_template_content_type_admin_title($subtype, $conf) {
+  $template = pure_panels_template_load($subtype);
+  if (!$template) {
+    return t('Deleted/missing panel template @name', array('@name' => $subtype));
   }
 
-  $title = filter_xss_admin($mini->title);
+  $title = filter_xss_admin($template->title);
   if (empty($title)) {
-    $title = t('Untitled mini panel');
+    $title = t('Untitled panel template');
   }
   return $title;
 }
