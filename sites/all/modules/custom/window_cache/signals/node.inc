@@ -22,7 +22,9 @@ function wc_node_signal(&$node, $prefix=NULL) {
 	// Invlidate the taxonomies attached to node
 	wc_signal_node_taxonomy_signal($node, $prefix);
   // Invalidates all subqueues 
-	wc_signal_node_subqueues_signal($node->nid, $prefix);
+  if (module_exists('nodequeue')) { 
+    wc_signal_node_subqueues_signal($node->nid, $prefix);
+  }
 }
 
 /*
