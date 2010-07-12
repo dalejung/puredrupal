@@ -101,13 +101,17 @@ function pure_panels_panel_task_override(&$handler,$display) {
   }
 }
 
-function pure_panels_task_cascade($type, &$node=NULL) {
+/**
+ *
+ */
+function pure_panels_task_cascade($parent_type, &$node=NULL) {
   // Node is final say
   $template_types = pure_panels_get_template_types();
   if($node) {
     foreach ((array) $node->pure_panels as $key=>$template) {
-      if ($template_types[$key] && $template_types[$key]['parent'] == $type) {
-        return $override = $node->pure_panels[$key];
+      if ($template_types[$key] && $template_types[$key]['parent'] == $parent_type) {
+        $override = $node->pure_panels[$key];
+        return $override;
       }
     }
   }
@@ -116,10 +120,11 @@ function pure_panels_task_cascade($type, &$node=NULL) {
     return;
   }
 
+
   // check context
-  foreach($template_types as $type => $template) {
-    if($template['parent'] != $type) {
-      continue;;
+  foreach($template_types as $type=> $template) {
+    if($template['parent'] != $parent_type) {
+      continue;
     }
 
     $plugin = context_get_plugin('reaction','pure_panels');

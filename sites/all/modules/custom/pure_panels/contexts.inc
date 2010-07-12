@@ -69,36 +69,3 @@ function pure_panels_context_reactions() {
   );
   return $plugins;
 }
-
-/**
- * If the context has a sitewide context enabled, we assume that it provides
- * default values. If ANY context that is not sidewide has the panel node set
- * it will blank the default ones
- */
-function pure_panels_context_active_contexts_alter(&$contexts) {
-  $defaults = array();
-  $overrides = array();
-  foreach ($contexts as $context) {
-    if ($context->sitewide) {
-      $defaults[] = $context;
-    }
-    else {
-      $overrides[] = $context;
-    }
-  }
-
-  foreach ($overrides as $override) {
-    // Right
-    if ($override->pure_panels_right_column) {
-      foreach ($defaults as $default) {
-        unset($default->pure_panels_right_column);
-      }
-    }
-    // Left
-    if ($override->pure_panels_left_column) {
-      foreach ($defaults as $default) {
-        unset($default->pure_panels_left_column);
-      }
-    }
-  }
-}

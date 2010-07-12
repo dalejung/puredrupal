@@ -23,7 +23,7 @@ function pure_panels_template_dropdowns(&$form, &$form_state) {
   );
   foreach ($types as $name) {
     $options = array(
-      '' => t('None'),
+      '' => t('N/A'),
     );
     $template_type = $template_types[$name];
     $options += pure_panels_get_templates($name);
@@ -121,10 +121,10 @@ function pure_panels_node_write(&$node) {
     $obj->template_type = $name;
     $obj->name = $node->{'pure_panels_' . $name};
 
-    drupal_write_record('pure_panels_node', $obj, array('vid', 'template_type'));
+    drupal_write_record('pure_panels_template_node', $obj, array('vid', 'template_type'));
     // Only insert new one for selected names
     if (!db_affected_rows() && $obj->name) {
-      drupal_write_record('pure_panels_node', $obj);
+      drupal_write_record('pure_panels_template_node', $obj);
     }
   }
 }
@@ -147,7 +147,7 @@ function pure_panels_node_load(&$node) {
  * Grab from database
  */
 function pure_panels_node_load_templates(&$node) {
-  $sql = "SELECT template_type, name FROM pure_panels_node WHERE vid = %d";
+  $sql = "SELECT template_type, name FROM pure_panels_template_node WHERE vid = %d";
   $results = db_query($sql, $node->vid);
   $templates = array();
   while ($row = db_fetch_object($results)) {
