@@ -4,7 +4,7 @@
 /**
  * @file pure_panels_template.module
  *
- * This module provides mini panels which are basically panels that can be
+ * This module provides panel templates which are basically panels that can be
  * used within blocks or other panels.
  */
 
@@ -28,15 +28,15 @@ function pure_panels_template_menu() {
 }
 
 // ---------------------------------------------------------------------------
-// Allow the rest of the system access to mini panels
+// Allow the rest of the system access to panel templates
 
 /**
- * Statically store all used IDs to ensure all mini panels get a unique id.
+ * Statically store all used IDs to ensure all panel templates get a unique id.
  */
 function pure_panels_template_get_id($name) {
   static $id_cache = array();
 
-  $id = 'mini-panel-' . $name;
+  $id = 'panel-template-' . $name;
   if (!empty($id_cache[$name])) {
     $id .= "-" . $id_cache[$name]++;
   }
@@ -59,7 +59,7 @@ function pure_panels_template_new() {
 }
 
 /**
- * Load a single mini panel.
+ * Load a single panel template.
  */
 function pure_panels_template_load($name) {
   ctools_include('export');
@@ -110,7 +110,7 @@ function pure_panels_template_load($name) {
 }
 
 /**
- * Load all mini panels.
+ * Load all panel templates.
  */
 function pure_panels_template_load_all($reset=FALSE) {
   static $templates;
@@ -165,7 +165,7 @@ function pure_panels_template_save(&$template) {
 }
 
 /**
- * Remove a mini panel.
+ * Remove a panel template.
  */
 function pure_panels_template_delete($template) {
   db_query("DELETE FROM {pure_panels_template} WHERE name = '%s'", $template->name);
@@ -180,7 +180,7 @@ function pure_panels_template_delete($template) {
 }
 
 /**
- * Export a mini panel.
+ * Export a panel template.
  */
 function pure_panels_template_export($template, $indent = '') {
   ctools_include('export');
@@ -193,7 +193,7 @@ function pure_panels_template_export($template, $indent = '') {
 }
 
 /**
- * Remove the block version of mini panels from being available content types.
+ * Remove the block version of panel templates from being available content types.
  */
 function pure_panels_template_ctools_block_info($module, $delta, &$info) {
   $info = NULL;
