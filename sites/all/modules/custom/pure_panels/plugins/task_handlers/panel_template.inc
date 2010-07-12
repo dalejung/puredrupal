@@ -19,9 +19,9 @@ $plugin = array(
   'visible' => TRUE, // may be added up front.
 
   // Administrative fields.
-  'title' => t('Panels Template'),
-  'admin summary' =>'panels_template_panel_template_admin_summary',
-  'admin title' => 'panels_template_panel_template_title',
+  'title' => t('Pure Panels Template'),
+  'admin summary' =>'pure_panels_panel_template_admin_summary',
+  'admin title' => 'pure_panels_panel_template_title',
   'admin css' => array(
     panels_get_path('css/panels_admin.css'),
   ),
@@ -32,7 +32,7 @@ $plugin = array(
     'settings' => array(
       'title' => t('General'),
       'description' => t('Change general settings about this variant.'),
-      'form' => 'panels_template_panel_template_edit_settings',
+      'form' => 'pure_panels_panel_template_edit_settings',
     ),
     'criteria' => array(
       'title' => t('Selection rules'),
@@ -76,13 +76,13 @@ $plugin = array(
         ),
         'forms' => array(
           'choose' => array(
-            'form id' => 'panels_template_panel_template_edit_layout',
+            'form id' => 'pure_panels_panel_template_edit_layout',
           ),
           'move' => array(
             'include' => array(
               drupal_get_path('module', 'panels') . '/includes/display-layout.inc',
             ),
-            'form id' => 'panels_template_panel_template_edit_move',
+            'form id' => 'pure_panels_panel_template_edit_move',
             'submit' => 'panels_change_layout_submit',
           ),
         ),
@@ -101,7 +101,7 @@ $plugin = array(
             'include' => array(
               drupal_get_path('module', 'panels') . '/includes/display-edit.inc',
             ),
-            'form id' => 'panels_template_panel_template_edit_content',
+            'form id' => 'pure_panels_panel_template_edit_content',
             'no blocks' => TRUE,
           ),
         ),
@@ -110,7 +110,7 @@ $plugin = array(
     'preview' => array(
       'title' => t('Preview'),
       'description' => t('Get a preview of what this variant will look like.'),
-      'form' => 'panels_template_panel_template_edit_preview',
+      'form' => 'pure_panels_panel_template_edit_preview',
       'ajax' => FALSE,
       'silent' => TRUE,
       'form info' => array('finish text' => t('Preview')),
@@ -118,14 +118,14 @@ $plugin = array(
   ),
 
   // Callback to render the data.
-  'render' => 'panels_template_panel_template_render',
+  'render' => 'pure_panels_panel_template_render',
 
   // Various callbacks for operations performed on the handler to ensure
   // related data is updated properly.
-  'save' => 'panels_template_panel_template_save',
-  'delete' => 'panels_template_panel_template_delete',
-  'export' => 'panels_template_panel_template_export',
-  'clone' => 'panels_template_panel_template_clone',
+  'save' => 'pure_panels_panel_template_save',
+  'delete' => 'pure_panels_panel_template_delete',
+  'export' => 'pure_panels_panel_template_export',
+  'clone' => 'pure_panels_panel_template_clone',
 
   'add features' => array(
     'criteria' => t('Selection rules'),
@@ -149,28 +149,28 @@ $plugin = array(
   ),
   'forms' => array(
     'settings' => array(
-      'form id' => 'panels_template_panel_template_edit_settings',
+      'form id' => 'pure_panels_panel_template_edit_settings',
     ),
     'choose' => array(
-      'form id' => 'panels_template_panel_template_edit_choose',
+      'form id' => 'pure_panels_panel_template_edit_choose',
       'no back validate' => TRUE,
     ),
     'layout' => array(
       'no return' => TRUE,
-      'form id' => 'panels_template_panel_template_edit_layout',
+      'form id' => 'pure_panels_panel_template_edit_layout',
     ),
     'move' => array(
       'include' => array(
         drupal_get_path('module', 'panels') . '/includes/display-layout.inc',
       ),
-      'form id' => 'panels_template_panel_template_edit_move',
+      'form id' => 'pure_panels_panel_template_edit_move',
       'submit' => 'panels_change_layout_submit',
     ),
     'content' => array(
       'include' => array(
         drupal_get_path('module', 'panels') . '/includes/display-edit.inc',
       ),
-      'form id' => 'panels_template_panel_template_edit_content',
+      'form id' => 'pure_panels_panel_template_edit_content',
       'no blocks' => TRUE,
     ),
     'context' => array(
@@ -207,7 +207,7 @@ $plugin = array(
  * - If none of the above is true, then a new display needs to be created
  *   for the handler and pla
  */
-function &panels_template_panel_template_get_display(&$handler) {
+function pure_panels_panel_template_get_display(&$handler) {
   if (isset($handler->conf['display'])) {
     return $handler->conf['display'];
   }
@@ -233,7 +233,7 @@ function &panels_template_panel_template_get_display(&$handler) {
  * We must first check to ensure the node is of a type we're allowed
  * to render. If not, decline to render it by returning NULL.
  */
-function panels_template_panel_template_render($handler, $base_contexts, $args, $test = TRUE) {
+function pure_panels_panel_template_render($handler, $base_contexts, $args, $test = TRUE) {
   // Go through arguments and see if they match.
   ctools_include('context');
   ctools_include('context-task-handler');
@@ -250,7 +250,7 @@ function panels_template_panel_template_render($handler, $base_contexts, $args, 
   }
 
   // Load the display
-  $display = panels_template_panel_template_get_display($handler);
+  $display = pure_panels_panel_template_get_display($handler);
 
   $display->context = $contexts;
   $display->args = $args;
@@ -300,7 +300,7 @@ function panels_template_panel_template_render($handler, $base_contexts, $args, 
  * later if the file disappears, but it's imperative that we do it here
  * to make sure that old, dirty CSS cache gets removed.
  */
-function panels_template_panel_template_save(&$handler, $update) {
+function pure_panels_panel_template_save(&$handler, $update) {
   // Only save the display if we believe it has been modified.
   if (isset($handler->conf['display'])) {
     panels_save_display($handler->conf['display']);
@@ -324,8 +324,8 @@ function panels_template_panel_template_save(&$handler, $update) {
  * rather than just letting its object be unpacked, which does not work
  * very well.
  */
-function panels_template_panel_template_export(&$handler, $indent) {
-  $display = panels_template_panel_template_get_display($handler);
+function pure_panels_panel_template_export(&$handler, $indent) {
+  $display = pure_panels_panel_template_get_display($handler);
   foreach (array('display', 'did', 'css_cache', 'temp_layout') as $item) {
     if (isset($handler->conf[$item])) {
       unset($handler->conf[$item]);
@@ -340,8 +340,8 @@ function panels_template_panel_template_export(&$handler, $indent) {
 /**
  * When a handler is cloned, we have to clone the display.
  */
-  function panels_template_panel_template_clone(&$handler) {
-  $old_display = panels_template_panel_template_get_display($handler);
+  function pure_panels_panel_template_clone(&$handler) {
+  $old_display = pure_panels_panel_template_get_display($handler);
   $code = panels_export_display($old_display);
   eval($code);
   foreach (array('display', 'did', 'css_cache', 'temp_layout') as $item) {
@@ -356,7 +356,7 @@ function panels_template_panel_template_export(&$handler, $indent) {
 /**
  * Callback to delete the display when a handler is deleted.
  */
-function panels_template_panel_template_delete(&$handler) {
+function pure_panels_panel_template_delete(&$handler) {
   if (!empty($handler->conf['did'])) {
     panels_delete_display($handler->conf['did']);
   }
@@ -365,7 +365,7 @@ function panels_template_panel_template_delete(&$handler) {
 /**
  * Set up a title for the panel based upon the selection rules.
  */
-function panels_template_panel_template_title($handler, $task, $subtask) {
+function pure_panels_panel_template_title($handler, $task, $subtask) {
   if (isset($handler->conf['title'])) {
     return check_plain($handler->conf['title']);
   }
@@ -382,11 +382,11 @@ function panels_template_panel_template_title($handler, $task, $subtask) {
  * provide a summary of the layout type and content on one side, and
  * a summary of the contexts in use on the other.
  */
-function panels_template_panel_template_admin_summary($handler, $task, $subtask, $page, $show_title = TRUE) {
+function pure_panels_panel_template_admin_summary($handler, $task, $subtask, $page, $show_title = TRUE) {
   $task_name = page_manager_make_task_name($task['name'], $subtask['name']);
   $output = '';
 
-  $display = panels_template_panel_template_get_display($handler);
+  $display = pure_panels_panel_template_get_display($handler);
 
   panels_load_include('plugins');
   ctools_include('context');
@@ -525,7 +525,7 @@ function panels_template_panel_template_admin_summary($handler, $task, $subtask,
  * previous layout to choose from. a different, only slightly different
  * variant is called to change a pre-existing layout.
  */
-function panels_template_panel_template_edit_choose(&$form, &$form_state) {
+function pure_panels_panel_template_edit_choose(&$form, &$form_state) {
   panels_load_include('common');
   panels_load_include('display-layout');
   panels_load_include('plugins');
@@ -533,7 +533,7 @@ function panels_template_panel_template_edit_choose(&$form, &$form_state) {
   // @todo -- figure out where/how to deal with this.
   $form_state['allowed_layouts'] = 'panels_page';
 
-  $form_state['display'] = &panels_template_panel_template_get_display($form_state['handler']);
+  $form_state['display'] = &pure_panels_panel_template_get_display($form_state['handler']);
 
   // Tell the Panels form not to display buttons.
   $form_state['no buttons'] = TRUE;
@@ -546,7 +546,7 @@ function panels_template_panel_template_edit_choose(&$form, &$form_state) {
 /**
  * Validate that a layout was chosen.
  */
-function panels_template_panel_template_edit_choose_validate(&$form, &$form_state) {
+function pure_panels_panel_template_edit_choose_validate(&$form, &$form_state) {
   if (empty($form_state['values']['layout'])) {
     form_error($form['layout'], t('You must select a layout.'));
   }
@@ -555,7 +555,7 @@ function panels_template_panel_template_edit_choose_validate(&$form, &$form_stat
 /**
  * A layout has been selected, set it up.
  */
-function panels_template_panel_template_edit_choose_submit(&$form, &$form_state) {
+function pure_panels_panel_template_edit_choose_submit(&$form, &$form_state) {
   $form_state['display']->layout = $form_state['values']['layout'];
   $form_state['handler']->conf['display'] = $form_state['display'];
   if (isset($form_state['page']->display_cache[$form_state['handler_id']])) {
@@ -571,7 +571,7 @@ function panels_template_panel_template_edit_choose_submit(&$form, &$form_state)
  * to the move content form, which is 'hidden' so it won't be accessed
  * directly.
  */
-function panels_template_panel_template_edit_layout(&$form, &$form_state) {
+function pure_panels_panel_template_edit_layout(&$form, &$form_state) {
   panels_load_include('common');
   panels_load_include('display-layout');
   panels_load_include('plugins');
@@ -579,7 +579,7 @@ function panels_template_panel_template_edit_layout(&$form, &$form_state) {
   // @todo -- figure out where/how to deal with this.
   $form_state['allowed_layouts'] = 'panels_page';
 
-  $form_state['display'] = &panels_template_panel_template_get_display($form_state['handler']);
+  $form_state['display'] = &pure_panels_panel_template_get_display($form_state['handler']);
 
   // Tell the Panels form not to display buttons.
   $form_state['no buttons'] = TRUE;
@@ -592,8 +592,8 @@ function panels_template_panel_template_edit_layout(&$form, &$form_state) {
 /**
  * Validate that a layout was chosen.
  */
-function panels_template_panel_template_edit_layout_validate(&$form, &$form_state) {
-  $display = &panels_template_panel_template_get_display($form_state['handler']);
+function pure_panels_panel_template_edit_layout_validate(&$form, &$form_state) {
+  $display = &pure_panels_panel_template_get_display($form_state['handler']);
 
   if (empty($form_state['values']['layout'])) {
     form_error($form['layout'], t('You must select a layout.'));
@@ -606,8 +606,8 @@ function panels_template_panel_template_edit_layout_validate(&$form, &$form_stat
 /**
  * A layout has been selected, set it up.
  */
-function panels_template_panel_template_edit_layout_submit(&$form, &$form_state) {
-  $display = &panels_template_panel_template_get_display($form_state['handler']);
+function pure_panels_panel_template_edit_layout_submit(&$form, &$form_state) {
+  $display = &pure_panels_panel_template_get_display($form_state['handler']);
 
   if ($form_state['values']['layout'] != $display->layout) {
     $form_state['handler']->conf['temp_layout'] = $form_state['values']['layout'];
@@ -617,8 +617,8 @@ function panels_template_panel_template_edit_layout_submit(&$form, &$form_state)
 /**
  * When a layout is changed, the user is given the opportunity to move content.
  */
-function panels_template_panel_template_edit_move(&$form, &$form_state) {
-  $form_state['display'] = &panels_template_panel_template_get_display($form_state['handler']);
+function pure_panels_panel_template_edit_move(&$form, &$form_state) {
+  $form_state['display'] = &pure_panels_panel_template_get_display($form_state['handler']);
   $form_state['layout'] = $form_state['handler']->conf['temp_layout'];
 
   panels_load_include('common');
@@ -648,7 +648,7 @@ function panels_template_panel_template_edit_move(&$form, &$form_state) {
  * Present the panels drag & drop editor to edit the display attached
  * to the task handler.
  */
-function panels_template_panel_template_edit_content(&$form, &$form_state) {
+function pure_panels_panel_template_edit_content(&$form, &$form_state) {
   ctools_include('ajax');
   panels_load_include('plugins');
   panels_load_include('common');
@@ -676,7 +676,7 @@ function panels_template_panel_template_edit_content(&$form, &$form_state) {
   }
 }
 
-function panels_template_panel_template_edit_content_submit(&$form, &$form_state) {
+function pure_panels_panel_template_edit_content_submit(&$form, &$form_state) {
   panels_edit_display_form_submit($form, $form_state);
   $handler = &$form_state['handler'];
 
@@ -693,7 +693,7 @@ function panels_template_panel_template_edit_content_submit(&$form, &$form_state
 /**
  * General settings for the panel
  */
-function panels_template_panel_template_edit_settings(&$form, &$form_state) {
+function pure_panels_panel_template_edit_settings(&$form, &$form_state) {
   $conf = $form_state['handler']->conf;
   $form['conf']['title'] = array(
     '#type' => 'textfield',
@@ -728,7 +728,7 @@ function panels_template_panel_template_edit_settings(&$form, &$form_state) {
 /**
  * Submit handler for general settings form.
  */
-function panels_template_panel_template_edit_settings_submit(&$form, &$form_state) {
+function pure_panels_panel_template_edit_settings_submit(&$form, &$form_state) {
   $form_state['handler']->conf['no_blocks'] = $form_state['values']['no_blocks'];
   $form_state['handler']->conf['css_id'] = $form_state['values']['css_id'];
   $form_state['handler']->conf['css'] = $form_state['values']['css'];
@@ -738,7 +738,7 @@ function panels_template_panel_template_edit_settings_submit(&$form, &$form_stat
 /**
  * Form to show a nice preview.
  */
-function panels_template_panel_template_edit_preview(&$form, &$form_state) {
+function pure_panels_panel_template_edit_preview(&$form, &$form_state) {
   ctools_include('context');
   ctools_include('context-task-handler');
 
@@ -748,7 +748,7 @@ function panels_template_panel_template_edit_preview(&$form, &$form_state) {
 
   // automatically preview if there are no argument placeholders.
   if (empty($form['preview'])) {
-    $display = panels_template_panel_template_get_display($form_state['handler']);
+    $display = pure_panels_panel_template_get_display($form_state['handler']);
     $display->context = $contexts;
     $output = panels_render_display($display);
     if (isset($form['buttons'])) {
@@ -772,8 +772,8 @@ function panels_template_panel_template_edit_preview(&$form, &$form_state) {
 /**
  * Display a preview upon submit if arguments were needed.
  */
-function panels_template_panel_template_edit_preview_submit(&$form, &$form_state) {
-  $display = panels_template_panel_template_get_display($form_state['handler']);
+function pure_panels_panel_template_edit_preview_submit(&$form, &$form_state) {
+  $display = pure_panels_panel_template_get_display($form_state['handler']);
   $display->context = ctools_context_replace_placeholders($form_state['contexts'], $form_state['values']['preview']);
 
   $form_state['content'] = panels_render_display($display);

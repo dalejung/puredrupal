@@ -103,7 +103,7 @@ function pure_panels_template_load($name) {
         'settings' => array(),
       ),
     );
-    $result[$name]->arguments = $args;
+    $result[$name]->arguments = $args + (array)$result[$name]->arguments;
 
     return $result[$name];
   }

@@ -37,6 +37,9 @@ function pure_panels_context_plugins() {
   return $plugins;
 }
 
+/**
+ * hook_context_registry
+ */
 function pure_panels_context_registry() {
   $registry = array();
   $registry['reactions'] =  array(
@@ -50,6 +53,9 @@ function pure_panels_context_registry() {
   return $registry;
 }
 
+/**
+ * hook_context_reactions
+ */
 function pure_panels_context_reactions() {
   $plugins = array();
 

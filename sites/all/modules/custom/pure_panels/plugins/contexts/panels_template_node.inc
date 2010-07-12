@@ -13,12 +13,12 @@
 $plugin = array(
   'title' => t("Node being viewed"),
   'description' => t('Node being viewed'),
-  'context' => 'panels_template_context_create_term',
-  'settings form' => 'panels_template_context_panels_template_node_settings_form',
-  'settings form validate' => 'panels_template_context_panels_template_node_settings_form_validate',
-  'settings form submit' => 'panels_template_context_panels_template_node_settings_form_submit',
+  'context' => 'pure_panels_template_context_create_term',
+  'settings form' => 'pure_panels_template_context_panels_template_node_settings_form',
+  'settings form validate' => 'pure_panels_template_context_panels_template_node_settings_form_validate',
+  'settings form submit' => 'pure_panels_template_context_panels_template_node_settings_form_submit',
   'keyword' => 'node',
-  'context name' => 'panels-template-node',
+  'context name' => 'pure-panels-template-node',
   'js' => array('misc/autocomplete.js'),
 );
 
@@ -26,7 +26,7 @@ $plugin = array(
  * It's important to remember that $conf is optional here, because contexts
  * are not always created from the UI.
  */
-function panels_template_context_create_term($empty, $data = NULL, $conf = FALSE) {
+function pure_panels_template_context_create_term($empty, $data = NULL, $conf = FALSE) {
   $context = new ctools_context('node');
   $context->plugin = 'node';
 
@@ -45,15 +45,15 @@ function panels_template_context_create_term($empty, $data = NULL, $conf = FALSE
   }
 }
 
-function panels_template_context_panels_template_node_settings_form($conf) {
+function pure_panels_template_context_panels_template_node_settings_form($conf) {
   return $form;
 }
 
 /**
  * Validate a term.
  */
-function panels_template_context_panels_template_node_settings_form_validate($form, &$form_values, &$form_state) {
+function pure_panels_template_context_panels_template_node_settings_form_validate($form, &$form_values, &$form_state) {
 }
 
-function panels_template_context_panels_template_node_settings_form_submit($form, &$form_values, &$form_state) {
+function pure_panels_template_context_panels_template_node_settings_form_submit($form, &$form_values, &$form_state) {
 }

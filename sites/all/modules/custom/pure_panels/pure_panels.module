@@ -11,6 +11,15 @@
 module_load_include('inc', 'pure_panels', 'contexts');
 module_load_include('inc', 'pure_panels', 'node_form');
 
+/**
+ * hook_ctools_plugin_directory
+ */
+function pure_panels_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'page_manager' || $module == 'panels' || $module == 'ctools') {
+    return 'plugins/' . $plugin;
+  }
+}
+
 
 /**
  * Implementation of hook_theme_registry_alter().
@@ -49,7 +58,7 @@ function pure_panels_preprocess_panels_layout(&$vars) {
  * Return all templates of a certain template type
  */
 function pure_panels_get_templates($template_type) {
-  $all_panels = pure_panels_load_all();
+  $all_panels = pure_panels_template_load_all();
   $list = array();
 
   foreach ($all_panels as $name => $panel) {
@@ -127,7 +136,7 @@ function pure_panels_node_view_task_override(&$handler,$display) {
 
   $name = pure_panels_task_cascade('node_view', $node);  
 
-  $templates = pure_panels_load_all();
+  $templates = pure_panels_template_load_all();
   $template = $templates[$name];
 
   if ($template) {
@@ -142,18 +151,22 @@ function pure_panels_site_template_task_override(&$handler,$display) {
 
   $node = $display->context['context_pure_panels_node_1']->data;
   $args = $display->args;
-  $content = $args[1]->content;
 
   $name = pure_panels_task_cascade('site_template', $node);  
 
-  $templates = pure_panels_load_all();
+  $templates = pure_panels_template_load_all();
   $template = $templates[$name];
 
   if ($template) {
     $display = $template->display;
+
     $task = page_manager_get_task('site_template');
-    $page = page_manager_get_current_page();
-    $contexts = ctools_context_handler_get_task_contexts($task, '', array($_GET['q'], $content, $page));
+    // Remember $args comes from old $display that panels_everywher prepared
+    $url = $args[0];
+    $content = $args[1];
+    $page = $args[2];
+
+    $contexts = ctools_context_handler_get_task_contexts($task, '', array($url, $content, $page));
     $display->context = $contexts;
     return $display;
   }
@@ -161,7 +174,7 @@ function pure_panels_site_template_task_override(&$handler,$display) {
 
 
 function pure_panels_grab_display($name) {
-  $templates = pure_panels_load_all();
+  $templates = pure_panels_template_load_all();
   $template = $templates[$name];
 
   if ($template) {

@@ -26,7 +26,7 @@ class pure_panels_reaction extends context_reaction {
   }
 
   function get_from_context($context, $type) {
-    return isset($context->reactions['panels_template'][$type]) ? $context->reactions['panels_template'][$type] : '';
+    return isset($context->reactions['pure_panels'][$type]) ? $context->reactions['pure_panels'][$type] : '';
   }
 
   /**
@@ -37,7 +37,7 @@ class pure_panels_reaction extends context_reaction {
     $default = '';
     $return = '';
     foreach($actives as $context) {
-      if($val = $context->reactions['panels_template'][$type]) {
+      if($val = $context->reactions['pure_panels'][$type]) {
         if($context->conditions['sitewide']['values'][1]) {
           $default = $val;
         } else {

@@ -179,7 +179,7 @@ function pure_panels_template_list_page() {
     // this is safe as it's always programmatic
     $item[] = $template->type;
 
-    $item[] = $panel_template->template_type;
+    $item[] = $template->template_type;
 
     if (empty($template->display)) {
       $template->display = $displays[$template->did];
@@ -421,7 +421,7 @@ function pure_panels_template_edit_form(&$form_state, $template) {
     '#type' => 'textfield',
     '#size' => 24,
     '#default_value' => $template->title,
-    '#title' => t('Mini panel title'),
+    '#title' => t('Panel Template title'),
     '#description' => t('The title for this panel template. It can be overridden in the block configuration.'),
   );
 
@@ -429,7 +429,7 @@ function pure_panels_template_edit_form(&$form_state, $template) {
     '#type' => 'textfield',
     '#size' => 24,
     '#default_value' => $template->name,
-    '#title' => t('Mini panel name'),
+    '#title' => t('Panel Template name'),
     '#maxlength' => 32,
     '#description' => t('A unique name used to identify this panel page internally. It must be only be alpha characters and underscores. No spaces, numbers or uppercase characters.'),
   );
@@ -443,11 +443,16 @@ function pure_panels_template_edit_form(&$form_state, $template) {
   $form['left']['settings']['template_type'] = array(
     '#type' => 'select',
     '#options' => $options,
-    '#default_value' => $panel_template->template_type,
+    '#default_value' => $template->template_type,
     '#title' => t('Template Type'),
     '#description' => '',
   );
 
+  /*
+   * Taken out for now. 
+   */
+
+  /*
   $form['left']['settings']['category'] = array(
     '#type' => 'textfield',
     '#size' => 24,
@@ -455,6 +460,7 @@ function pure_panels_template_edit_form(&$form_state, $template) {
     '#title' => t('Panel template category'),
     '#description' => t("The category that this panel template will be grouped into on the Add Content form. Only upper and lower-case alphanumeric characters are allowed. If left blank, defaults to 'Mini panels'."),
   );
+   */
 
   ctools_include('context');
   $template->context = $template->display->context = ctools_context_load_contexts($template);
@@ -608,6 +614,7 @@ function pure_panels_template_context_form(&$form_state, $template, $next = NULL
   ctools_context_add_context_form('panel_template', $form, $form_state, $form['right']['contexts_table'], $template);
   ctools_context_add_required_context_form('panel_template', $form, $form_state, $form['left']['required_contexts_table'], $template);
   ctools_context_add_relationship_form('panel_template', $form, $form_state, $form['right']['relationships_table'], $template);
+  //ctools_context_add_argument_form('panel_template', $form, $form_state, $form['left']['argument_table'], $template);
 
   $label = $next ? t('Save and proceed') : t('Save');
   $form['submit'] = array(
