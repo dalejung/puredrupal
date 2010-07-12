@@ -1,4 +1,5 @@
 <?php
+// $Id$
 
 function panels_solr_search_results_ctools_content_types() {
   return array(

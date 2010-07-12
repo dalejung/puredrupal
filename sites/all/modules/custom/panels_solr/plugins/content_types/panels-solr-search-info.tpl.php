@@ -1,6 +1,8 @@
 <?php
- // Expose as much as I can via preprocess
- // This should overriden 
+// $Id$
+
+// Expose as much as I can via preprocess
+// This should overriden 
 ?>
 
 <?php if(isset($result_count)): ?>

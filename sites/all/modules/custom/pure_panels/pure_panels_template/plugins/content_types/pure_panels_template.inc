@@ -1,4 +1,6 @@
 <?php
+// $Id$
+
 /**
  * Specially named hook. for .inc file. This looks a little silly due to the
  * redundancy, but that's really just because the content type shares a

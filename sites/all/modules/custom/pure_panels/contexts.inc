@@ -1,4 +1,6 @@
 <?php
+// $Id$
+
 /**
  * Provide a context driven right column for panel nodes
  */

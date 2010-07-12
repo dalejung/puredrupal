@@ -1,3 +1,5 @@
+; $Id$
+
 name = Panels Template Base
 description = Creates right/left column. Also supports article and homepage type
 package = "Pure Panels"

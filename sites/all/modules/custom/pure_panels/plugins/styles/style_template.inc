@@ -1,5 +1,5 @@
 <?php
-// $Id: default.inc,v 1.1.2.2 2009/03/24 18:32:20 merlinofchaos Exp $
+// $Id$
 
 /**
  * plugin definition

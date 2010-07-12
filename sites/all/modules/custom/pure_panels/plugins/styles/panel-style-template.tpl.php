@@ -1,4 +1,6 @@
 <?php 
+// $Id$
+
 /*
  *  If this tpl is called then we were not overriden
  * */

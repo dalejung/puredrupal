@@ -1,4 +1,5 @@
 <?php
+// $Id$
 
 function pure_panels_post_form_alter(&$form, &$form_state) {
   if ($form['#id'] == 'node-form') {

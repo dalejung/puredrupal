@@ -1,5 +1,5 @@
 <?php
-// $Id: panel_template.inc,v 1.1.2.37 2009/08/06 00:20:00 merlinofchaos Exp $
+// $Id$
 
 /**
  * @file

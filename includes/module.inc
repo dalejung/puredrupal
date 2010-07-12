@@ -421,6 +421,11 @@ function module_implements($hook, $sort = FALSE, $refresh = FALSE) {
     return;
   }
 
+  // 
+  if($hook == 'return_static') {
+    return $implementations;
+  }
+
   if (!isset($implementations[$hook])) {
     $implementations[$hook] = array();
     $list = module_list(FALSE, TRUE, $sort);

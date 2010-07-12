@@ -1,5 +1,5 @@
 <?php
-// $Id: pure_panels_template.admin.inc,v 1.6.2.12 2010/05/20 09:05:37 sdboyer Exp $
+// $Id$
 
 /**
  * @file
