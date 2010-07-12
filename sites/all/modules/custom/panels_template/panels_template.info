@@ -1,5 +1,0 @@
-name = Panels Template
-description = Panels Template System.
-package = "Panels"
-dependencies[] = panels
-core = 6.x
