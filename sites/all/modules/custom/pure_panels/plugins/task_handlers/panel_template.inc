@@ -207,7 +207,7 @@ $plugin = array(
  * - If none of the above is true, then a new display needs to be created
  *   for the handler and pla
  */
-function pure_panels_panel_template_get_display(&$handler) {
+function &pure_panels_panel_template_get_display(&$handler) {
   if (isset($handler->conf['display'])) {
     return $handler->conf['display'];
   }
