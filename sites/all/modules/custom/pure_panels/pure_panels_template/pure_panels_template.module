@@ -1,0 +1,171 @@
+<?php
+// $Id: pure_panels_template.module,v 1.5.2.20 2010/05/17 20:12:30 sdboyer Exp $
+
+/**
+ * @file pure_panels_template.module
+ *
+ * This module provides mini panels which are basically panels that can be
+ * used within blocks or other panels.
+ */
+
+/**
+ * Implementation of hook_perm().
+ */
+function pure_panels_template_perm() {
+  return array('create panels template', 'administer panels template');
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function pure_panels_template_menu() {
+  // Safety: go away if CTools is not at an appropriate version.
+  if (!defined('PANELS_REQUIRED_CTOOLS_API') || !module_invoke('ctools', 'api_version', PANELS_REQUIRED_CTOOLS_API)) {
+    return array();
+  }
+  require_once drupal_get_path('module', 'pure_panels_template') . '/pure_panels_template.admin.inc';
+  return _pure_panels_template_menu();
+}
+
+// ---------------------------------------------------------------------------
+// Allow the rest of the system access to mini panels
+
+/**
+ * Statically store all used IDs to ensure all mini panels get a unique id.
+ */
+function pure_panels_template_get_id($name) {
+  static $id_cache = array();
+
+  $id = 'mini-panel-' . $name;
+  if (!empty($id_cache[$name])) {
+    $id .= "-" . $id_cache[$name]++;
+  }
+  else {
+    $id_cache[$name] = 1;
+  }
+
+  return $id;
+}
+
+// ---------------------------------------------------------------------------
+// Database functions.
+
+/**
+ * Create a new page with defaults appropriately set from schema.
+ */
+function pure_panels_template_new() {
+  ctools_include('export');
+  return ctools_export_new_object('pure_panels_template');
+}
+
+/**
+ * Load a single mini panel.
+ */
+function pure_panels_template_load($name) {
+  ctools_include('export');
+  $result = ctools_export_load_object('pure_panels_template', 'names', array($name));
+  if (isset($result[$name])) {
+    if (empty($result[$name]->display)) {
+      $result[$name]->display = panels_load_display($result[$name]->did);
+    }
+    return $result[$name];
+  }
+}
+
+/**
+ * Load all mini panels.
+ */
+function pure_panels_template_load_all() {
+  ctools_include('export');
+  $minis = ctools_export_load_object('pure_panels_template');
+  $dids = array();
+  foreach ($minis as $mini) {
+    if (!empty($mini->did)) {
+      $dids[$mini->did] = $mini->name;
+    }
+  }
+
+  $displays = panels_load_displays(array_keys($dids));
+  foreach ($displays as $did => $display) {
+    $minis[$dids[$did]]->display = $display;
+  }
+
+  return $minis;
+}
+
+/**
+ * Write a mini panel to the database.
+ */
+function pure_panels_template_save(&$mini) {
+  if (!empty($mini->display)) {
+    $display = panels_save_display($mini->display);
+    $mini->did = $display->did;
+  }
+
+  $update = (isset($mini->pid) && $mini->pid != 'new') ? array('pid') : array();
+  drupal_write_record('pure_panels_template', $mini, $update);
+
+  return $mini;
+}
+
+/**
+ * Remove a mini panel.
+ */
+function pure_panels_template_delete($mini) {
+  db_query("DELETE FROM {pure_panels_template} WHERE name = '%s'", $mini->name);
+  if ($mini->type != t('Overridden')) {
+    db_query("DELETE FROM {blocks} WHERE module = 'pure_panels_template' AND delta = '%s'", $mini->name);
+  }
+  return panels_delete_display($mini->did);
+}
+
+/**
+ * Export a mini panel.
+ */
+function pure_panels_template_export($mini, $indent = '') {
+  ctools_include('export');
+  $output = ctools_export_object('pure_panels_template', $mini, $indent);
+  // Export the primary display
+  $display = !empty($mini->display) ? $mini->display : panels_load_display($mini->did);
+  $output .= panels_export_display($display, $indent);
+  $output .= $indent . '$mini->display = $display' . ";\n";
+  return $output;
+}
+
+/**
+ * Remove the block version of mini panels from being available content types.
+ */
+function pure_panels_template_ctools_block_info($module, $delta, &$info) {
+  $info = NULL;
+}
+
+/**
+ * Menu callback to check to see if a mini panel is valid as part
+ * of a path, and if it is, return the mini.
+ */
+function pure_panels_template_admin_load($name) {
+  $mini = pure_panels_template_load($name);
+  if ($mini && empty($mini->disabled)) {
+    return $mini;
+  }
+}
+
+/**
+ * Implementation of hook_ctools_plugin_directory() to let the system know
+ * we implement task and task_handler plugins.
+ */
+function pure_panels_template_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'ctools' && $plugin == 'content_types') {
+    return 'plugins/' . $plugin;
+  }
+}
+
+function pure_panels_template_pure_panels_template_list() {
+  $all_panels = pure_panels_template_load_all();
+  $list = array();
+
+  foreach ($all_panels as $name => $panel) {
+    $list[$name] = check_plain($name) . ' (' . check_plain($panel->title) . ')';
+  }
+  return $list;
+}
