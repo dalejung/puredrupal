@@ -1,0 +1,61 @@
+<?php
+/**
+ * Call by any common field function
+ */
+function common_view_process($owner_module, $hook, &$entity) {
+  $content = NULL;
+  
+  $args = func_get_args();
+  // If owner function does not return, let other modules hook in.
+  foreach (module_implements($hook) as $module) {
+    if ($module == $owner_module) {
+      continue;
+    }
+    $function = $module . '_'. $hook;
+    $result = call_user_func($function, $node);
+
+    if ($result) {
+      $content = $result;
+      break;
+    }
+  }
+
+  // If we don't get data, we default to the owner module
+  if (empty($content)) {
+    $func = $owner_module . '_' . $hook;   
+    if ($additional_args) {
+      $content = $func($node, $args);
+    }
+    else {
+      $content = $func($node);
+    }
+  }
+
+  // If owner function does not return, let other modules hook in
+  $hook = 'common_' . $hook . '_alter';
+  foreach (module_implements($hook) as $module) {
+    $function = $module . '_'. $hook;
+    $function($node, $content);
+  }
+
+  return $content;
+}
+
+/**
+ * Image Formatters
+ */
+function common_view_imagecache_formatters() {
+  $formatters = array();
+
+  foreach (imagecache_presets() as $preset) {
+    $formatters[$preset['presetname'] . '_default'] = array(
+      'label' => t('@preset image', array('@preset' => $preset['presetname'])),
+      'field types' => array('image', 'filefield'),
+    );
+    $formatters[$preset['presetname'] . '_linked'] = array(
+      'label' => t('@preset image linked to node', array('@preset' => $preset['presetname'])),
+      'field types' => array('image', 'filefield'),
+    );
+  }
+  return $formatters;
+}

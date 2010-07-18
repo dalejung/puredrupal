@@ -1,0 +1,5 @@
+; $Id$
+name = Common View
+description = "Common View on entities"
+core = 6.x
+package = Pure
