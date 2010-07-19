@@ -81,6 +81,9 @@ function wc_window_key($base_key, $settings) {
   return $window_key;
 }
 
+/**
+ *
+ */
 function wc_granularity_key($granularity) {
   $grains = window_cache_get_all_grains();
 

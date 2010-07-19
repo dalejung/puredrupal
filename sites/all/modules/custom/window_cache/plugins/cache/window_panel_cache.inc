@@ -19,9 +19,13 @@ $plugin = array(
  * Get cached content.
  */
 function window_cache_panels_cache_get_cache($conf, $display, $args, $contexts, $pane = NULL) {
+  $pane_key = window_cache_pane_key($pane);
+  $settings = $pane->cache['settings'];
+  $window_key = wc_window_key($pane_key, $settings);
   if (!$cache) {
     return FALSE;
   }
+
   $cache->data->content->content = '<div class="signal-cached">' . $cache_info . $cache->data->content->content . '</div>';
 
   return $cache->data;
@@ -47,33 +51,6 @@ function window_cache_panels_cache_clear_cache($display) {
   $cid .= ':' . $display->did;
 
   cache_clear_all($cid, 'cache', TRUE);
-}
-
-/**
- * Figure out an id for our cache based upon input and settings.
- */
-function window_cache_panels_cache_get_id($display, $pane) {
-  // By default use the pane type & subtype as the identifier.
-	if(is_object($pane) && !$pane->pid) {
-  	$base_key = "panel:{$pane->type}:{$pane->subtype}";
-	} else {
-		$base_key = 'panel_';
-  }
-
-  // If available, include the display owner.
-  if (isset($display->owner) && isset($display->owner->id)) {
-    $base_key .= ':' . $display->owner->id;
-  }
-  
-  // Include the display did if it's available.
-    $base_key .= ':' . $display->did;
-
-  // Tack on the pane pid if it's available.
-  if (!empty($pane->pid)) {
-    $base_key .= ':' . $pane->pid;
-  }
-
-  return $base_key;
 }
 
 function window_cache_panels_cache_settings_form($conf, $display, $pid) {

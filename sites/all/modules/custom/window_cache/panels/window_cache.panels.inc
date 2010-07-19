@@ -16,7 +16,7 @@ function window_cache_pane_key(&$content) {
 }
 
 /*
- *
+ * We take over the cache settings in the pre_render
  */
 function window_cache_panels_pre_render(&$display) {
   $settings = array();
@@ -26,15 +26,18 @@ function window_cache_panels_pre_render(&$display) {
     $pane_key = window_cache_pane_key($content);
 
     $hook = 'window_cache_pane_settings';
+
+    $conf = window_cache_panels_default_settings($display, $content, $pane_key); 
+
     foreach (module_implements($hook) as $module) {
       $func = $module . '_' . $hook;
-      $ret = $func($display, $content, $pane_key);
-      if ($ret) {
+      $func($conf, $display, $content, $pane_key);
+      if ($conf['final']) {
         break;
       }
     }
 
-    $settings[$pane_key] = $ret ? $ret : array();
+    $settings[$pane_key] = $conf;
   }
 
   wc_panels_apply_all_settings($display, $settings); 
@@ -46,12 +49,11 @@ function wc_panels_apply_all_settings(&$display, $settings) {
     $pane_key = window_cache_pane_key($pane);
 
     $cache_conf = $settings[$pane_key];
-    $cache_conf = 'dale';
     wc_panels_apply_single_settings($pane, $cache_conf);
   }
 }
 
 function wc_panels_apply_single_settings(&$pane, $settings) {
   $pane->cache['method'] = 'window_panel_cache';
-  $pane->cache_settings = $settings;
+  $pane->cache['settings'] = $settings;
 }
