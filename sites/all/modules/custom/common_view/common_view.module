@@ -2,17 +2,100 @@
 /**
  * Call by any common field function
  */
-function common_view_process($owner_module, $hook, &$entity) {
+
+require_once('common.inc');
+
+/**
+ * Implementation hook_views_api
+ */
+function common_view_views_api() {
+  return array(
+    'api' => 2,
+  );
+}
+
+/**
+ * Caller Function
+ */
+function common_view($view, &$entity) {
+  $common_views = common_view_gather_views();
+
+  if(!$entry = $common_views[$view]) {
+    return;
+  }
+  return common_view_process($entry, $entity);
+}
+
+/**
+ * Gather, process, return the common_view registry. Should be static and external
+ * cached at some point 
+ */
+function common_view_gather_views() {
+  static $common_views = array();
+
+  if($common_views) {
+    return $common_views;
+  }
+
+  $hook = 'common_view_registry';
+  foreach(module_implements($hook) as $module) {
+    $func = $module .'_'. $hook;
+    $entries = $func();
+    foreach($entries as $key => $entry) {
+      common_view_process_entry($module, $key, $entry); 
+      $common_views[$key] = $entry;
+    }
+  }
+
+  drupal_alter('common_view_registry',$common_views);
+
+  return $common_views;
+}
+
+/**
+ * Broke out the entry processing
+ */
+function common_view_process_entry($module, $key, &$entry) {
+  // Default to the providing module
+  if(!$entry['module']) {
+    $entry['module'] = $module;
+  }
+
+  $hook = 'common_view_' . $key;
+  // Setup the default base func is it exists
+  if(!$entry['base function']) {
+    $base_func = $entry['module'] .'_'. $hook;
+    if(function_exists($base_func)) {
+      $entry['base function'] = $base_func;
+    }
+  }
+
+  // Build out the callable functions  
+  foreach (module_implements($hook) as $module) {
+    if ($module == $entry['module']) {
+      continue;
+    }
+    $function = $module . '_'. $hook;
+    if(function_exists($function)) {
+      $entry['functions'][] = $function;
+    }
+  }
+
+}
+
+/**
+ * Workhouse. Uses the reg and entity to return the correct view of the entity
+ */
+function common_view_process($entry, &$entity) {
   $content = NULL;
   
   $args = func_get_args();
   // If owner function does not return, let other modules hook in.
-  foreach (module_implements($hook) as $module) {
-    if ($module == $owner_module) {
+  foreach ((array)$entry['functions'] as $func) {
+    if ($func == $entry['base function']) {
       continue;
     }
-    $function = $module . '_'. $hook;
-    $result = call_user_func($function, $node);
+    $result = call_user_func($func, $entity);
 
     if ($result) {
       $content = $result;
@@ -22,20 +105,8 @@ function common_view_process($owner_module, $hook, &$entity) {
 
   // If we don't get data, we default to the owner module
   if (empty($content)) {
-    $func = $owner_module . '_' . $hook;   
-    if ($additional_args) {
-      $content = $func($node, $args);
-    }
-    else {
-      $content = $func($node);
-    }
-  }
-
-  // If owner function does not return, let other modules hook in
-  $hook = 'common_' . $hook . '_alter';
-  foreach (module_implements($hook) as $module) {
-    $function = $module . '_'. $hook;
-    $function($node, $content);
+    $func = $entry['base function'];   
+    $content = $func($entity);
   }
 
   return $content;

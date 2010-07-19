@@ -18,10 +18,8 @@ class common_view_handler_field_node extends views_handler_field_node {
     $nid = $values->{$this->aliases['nid']};
     $node = node_load($nid);
 
-    $func = $this->definition['handler function'];
-    if (function_exists($func)) {
-      $content = $func($node);
-    }
+    $view = $this->definition['common_view view'];
+    $content = common_view($view, $node);
     return $this->render_link($content, $values);
   }
 
@@ -29,19 +27,17 @@ class common_view_handler_field_node extends views_handler_field_node {
     if (!empty($this->options['link_to_node']) && $data !== NULL && $data !== '') {
       $node = node_load($values->{$this->aliases['nid']});
       $this->options['alter']['make_link'] = TRUE;
-      $this->options['alter']['path'] = common_view_link($node);
+      // Grab link via common_vieww
+      $this->options['alter']['path'] = common_view('link', $node);
       $this->options['alter']['alt'] = check_plain($data);
-      if (
-        !empty($node->field_link_target_blank[0]['value']) 
-        && 'on' == $node->field_link_target_blank[0]['value']
-      ) {
-        $this->options['alter']['target'] = '_blank';
-      } else {
-        // Somewhere up the chain, this object is being reused when processing a 
-        // group of links. As such, the target property carries through from item 
-        // to item. This line is necessary to prevent ALL links from gaining a 
-        // target after the initial target occures.
-        unset($this->options['alter']['target']);
+      if (isset($this->aliases['language'])) {
+        $languages = language_list();
+        if (isset($languages[$values->{$this->aliases['language']}])) {
+          $this->options['alter']['language'] = $languages[$values->{$this->aliases['language']}];
+        }
+        else {
+          unset($this->options['alter']['language']);
+        }
       }
     }
     return $data;

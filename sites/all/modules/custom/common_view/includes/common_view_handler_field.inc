@@ -18,10 +18,8 @@ class common_view_handler_field extends views_handler_field_node {
     $nid = $values->{$this->aliases['nid']};
     $node = node_load($nid);
 
-    $func = $this->definition['handler function'];
-    if (function_exists($func)) {
-      $content = $func($node);
-    }
+    $view = $this->definition['common_view view'];
+    $content = common_view($view, $node);
     return $content;
   }
 }
